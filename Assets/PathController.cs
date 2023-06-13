@@ -1,8 +1,4 @@
-using System.Linq;
-using UnityEditor.Search;
 using UnityEngine;
-using UnityEditor;
-using Unity.VisualScripting;
 
 public enum PathMovementStyle
 {

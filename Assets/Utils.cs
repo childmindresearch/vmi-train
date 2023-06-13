@@ -1,13 +1,13 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+#if UNITY_EDITOR
 using UnityEditor;
-using static UnityEditor.PlayerSettings;
+#endif
 
 public class Utils
 {
     public static void DrawPath(Vector3[] points, Transform transform, bool loop = false)
     {
+#if UNITY_EDITOR
         if (points.Length == 0) return;
 
         for (int i = 0; i < points.Length; i++)
@@ -19,7 +19,7 @@ public class Utils
             Gizmos.DrawWireSphere(p, 1f);
             if (i > 0)
             {
-                var p0 = transform.TransformPoint(points[i-1]);
+                var p0 = transform.TransformPoint(points[i - 1]);
                 Gizmos.DrawLine(p0, p);
             }
         }
@@ -31,7 +31,7 @@ public class Utils
                 transform.TransformPoint(points[0])
             );
         }
-
+#endif
     }
 
 
@@ -41,5 +41,43 @@ public class Utils
         Gizmos.DrawLine(new Vector3(x, y, z), new Vector3(x, y, z + v));
         Gizmos.DrawLine(new Vector3(x + h, y, z + v), new Vector3(x + h, y, z));
         Gizmos.DrawLine(new Vector3(x + h, y, z + v), new Vector3(x, y, z + v));
+    }
+
+    public static Vector2[] ScalarArr2Vec2Arr(float[] arr)
+    {
+        Vector2[] re = new Vector2[arr.Length / 2];
+        for (var i = 0; i < re.Length; i++)
+        {
+            re[i] = new Vector2(
+                arr[i * 2],
+                arr[i * 2 + 1]
+            );
+        }
+        return re;
+    }
+
+    public static Vector3[] ScalarArr2Vec3ArrXZ(float[] arr, float fill = 0)
+    {
+        Vector3[] re = new Vector3[arr.Length / 2];
+        for (var i = 0; i < re.Length; i++)
+        {
+            re[i] = new Vector3(
+                arr[i * 2],
+                fill,
+                arr[i * 2 + 1]
+            );
+        }
+        return re;
+    }
+
+    public static void ClampArrInPlace(Vector2[] arr, float min, float max)
+    {
+        for (var i = 0; i < arr.Length; i++)
+        {
+            arr[i] = new Vector2(
+                Mathf.Clamp(arr[i].x, min, max),
+                Mathf.Clamp(arr[i].y, min, max)
+            );
+        }
     }
 }

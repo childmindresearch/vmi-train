@@ -1,17 +1,26 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using static ExperimentSerialization;
 
 public class Room : MonoBehaviour
 {
     public float RoomWidth, RoomHeight = 50;
 
     public Vector3[] WayPoints;
+    public Vector2[] TimePos;
+    public bool TimePosInterpolation = false;
+    public Vector2[] OcclusionStartStop;
+    public RectifiedPath Path = null;
 
     public bool generateTracks = true;
-    public GameObject track;
-    public float trackSpacing = 2;
+    public RoomManager manager;
+
+    public float Duration = 10f;
+    private float StartTime = 0f;
+    public bool finished = false;
+
+    public int NumDistractors = 0;
+
+    public int seed = 42;
 
     private void SetCameraToBounds(Camera cam)
     {
@@ -20,111 +29,176 @@ public class Room : MonoBehaviour
             50,
             gameObject.transform.position.z + RoomHeight * 0.5f
         );
-        cam.orthographicSize = RoomHeight * 0.5f;
+        var roomAspect = RoomWidth / RoomHeight;
+        var screenAspect = Screen.width / (float)Screen.height;
+        cam.orthographicSize = (roomAspect > screenAspect) ? RoomHeight * 0.5f * (roomAspect / screenAspect) : RoomHeight * 0.5f;
 
         cam.transform.eulerAngles = new Vector3(90, 0, 0);
-
-        // cam.transform.eulerAngles = new Vector3(0, transform.eulerAngles.y, transform.eulerAngles.z);
-
-        /*cam.transform.position = new Vector3(
-            cam.transform.position.x,
-            cam.transform.position.y,
-            cam.transform.position.z
-        );*/
-        /*
-        cam.transform.position = new Vector3(
-            gameObject.transform.position.x + RoomWidth * 0.5f,
-            50,
-            gameObject.transform.position.z + RoomHeight * 0.5f
-        );
-        cam.orthographicSize = RoomHeight * 0.5f;
-
-        cam.transform.eulerAngles = new Vector3(45, transform.eulerAngles.y, transform.eulerAngles.z);
-
-        cam.transform.position = new Vector3(
-            cam.transform.position.x,
-            cam.transform.position.y,
-            cam.transform.position.z - 45
-        );
-        */
     }
 
-    private Vector3[] RealWaypoints()
+    private void OnRectTransformDimensionsChange()
     {
-        var l = new LagrangeInterpolation(WayPoints);
-        var pp = new Vector3[30];
+        SetCameraToBounds(Camera.main);
+    }
 
-        for (int i = 0; i < pp.Length; i++)
+    public static Room FromConfiguration(RoomConfiguration config, RoomManager manager, GameObject parent)
+    {
+        var roomObj = new GameObject("Room");
+        roomObj.transform.parent = parent.transform;
+        var room = roomObj.AddComponent<Room>();
+        room.RoomWidth = config.width;
+        room.RoomHeight = config.height;
+        room.manager = manager;
+        room.Duration = config.durationSec;
+        room.NumDistractors = config.numDistractors;
+        room.seed = config.seed;
+
+        room.TimePosInterpolation = config.timeposInterpolation;
+        room.TimePos = Utils.ScalarArr2Vec2Arr(config.timepos);
+
+        if (room.TimePosInterpolation)
         {
-            var x = WayPoints[0].x + (i * ((WayPoints[WayPoints.Length - 1].x - WayPoints[0].x) / (pp.Length - 1)));
-            pp[i] = new Vector3(
-                x,
-                WayPoints[0].y,
-                l.get(x)
+            room.TimePos = new LagrangeInterpolation(room.TimePos).rectify(0, 1, 0.01f, 0.001f, 1000).GetPoints();
+        }
+        Utils.ClampArrInPlace(room.TimePos, 0, 1);
+
+
+        room.OcclusionStartStop = Utils.ScalarArr2Vec2Arr(config.occlusionStartStop);
+        Utils.ClampArrInPlace(room.OcclusionStartStop, 0, 1);
+
+        room.WayPoints = Utils.ScalarArr2Vec3ArrXZ(config.path);
+        for (var i = 0; i < room.WayPoints.Length; i++)
+        {
+            room.WayPoints[i] = new Vector3(
+                room.WayPoints[i].x * config.width,
+                room.WayPoints[i].y,
+                room.WayPoints[i].z * config.height
             );
         }
 
-        var WayPoints2 = pp;
+        room.RecalculatePath();
 
-        Vector3[] wps = new Vector3[WayPoints2.Length];
-        for (int i = 0; i < WayPoints2.Length; i++)
-        {
-            wps[i] = gameObject.transform.TransformPoint(WayPoints2[i]);
-        }
-        return wps;
+        room.gameObject.SetActive(false);
+
+        return room;
     }
 
-    public void StartRoom(PathController controller)
+    private void RecalculatePath()
     {
+        Path = new LagrangeInterpolation(WayPoints).rectify(0, RoomWidth, 1, 0.01f, 1000);
+    }
+
+    public void StartRoom()
+    {
+        this.gameObject.SetActive(true);
         SetCameraToBounds(Camera.main);
-        controller.StartPath(RealWaypoints());
+
+        StartTime = Time.time;
+        finished = false;
     }
 
     public void StopRoom()
     {
+        this.gameObject.SetActive(false);
+    }
+
+    private void GenerateObjAlongPath(GameObject segmentPrefab, float spacing, float start = 0, float stop = 1)
+    {
+        if (manager.track == null || !generateTracks) return;
+
+        var pp = new Vector3[(int)(Path.arcLength / spacing)];
+
+        for (int i = 1; i < pp.Length; i++)
+        {
+            float perc = (i - .5f) / (pp.Length - 1f);
+            if (perc < start || stop < perc) continue;
+
+            var segment = Instantiate(segmentPrefab, transform);
+
+            var p0 = Path.getLerp((i - 1) / ((float)pp.Length - 1));
+            var p1 = Path.getLerp(i / ((float)pp.Length - 1));
+            segment.transform.position = new Vector3(
+                (p0.x + p1.x) * 0.5f,
+                0,
+                (p0.y + p1.y) * 0.5f
+            );
+
+            segment.transform.LookAt(new Vector3(p1.x, 0, p1.y));
+        }
+    }
+
+    private void GenerateTracks()
+    {
+        if (manager.track == null || !generateTracks) return;
+
+        GenerateObjAlongPath(manager.track, manager.trackSpacing);
+    }
+
+    private void GenerateOcclusions()
+    {
+        if (manager.occlusionObj == null) return;
+
+        for (var i = 0; i < OcclusionStartStop.Length; i++)
+        {
+            GenerateObjAlongPath(manager.occlusionObj, manager.occlusionObjSpacing, OcclusionStartStop[i].x, OcclusionStartStop[i].y);
+        }
+
+
+    }
+
+    private void GenerateDistractors()
+    {
+        Random.InitState(seed);
+
+        var numDistractorPrototypes = manager.distractorContainer.transform.childCount;
+        for (int i = 0; i < NumDistractors; i++)
+        {
+            int ri = Random.Range(0, numDistractorPrototypes);
+            var dObj = manager.distractorContainer.transform.GetChild(ri).gameObject;
+            Vector3 rPos = new Vector3(
+                Random.Range(0, RoomWidth),
+                0,
+                Random.Range(0, RoomHeight)
+            );
+
+            Instantiate(dObj, rPos, dObj.transform.rotation, this.transform);
+        }
     }
 
     private void Start()
     {
-        if (track == null || !generateTracks) return;
+        if (Path == null) RecalculatePath();
 
-        var wps = RealWaypoints();
-
-        for (int i = 1; i < wps.Length; i++)
-        {
-            var trajectory = wps[i] - wps[i - 1];
-            var trajectoryMag = trajectory.magnitude;
-
-            var numSegments = Mathf.FloorToInt(trajectoryMag / trackSpacing);
-
-
-
-            for (int n = 0; n < numSegments; n++)
-            {
-                var segment = Instantiate(track);
-                segment.transform.position = wps[i - 1];
-                segment.transform.LookAt(wps[i]);
-
-                segment.transform.position = wps[i - 1] + (trajectory * (1 / trajectoryMag * ((n + .5f) * trackSpacing)));
-            }
-            var endSegment = Instantiate(track);
-            endSegment.transform.position = wps[i] - (trajectory * (1 / trajectoryMag * .5f));
-            endSegment.transform.LookAt(wps[i - 1]);
-        }
+        GenerateTracks();
+        GenerateOcclusions();
+        GenerateDistractors();
     }
 
     void Update()
     {
+        float a = (Time.time - StartTime) / Duration;
 
+        if (a >= 1) { finished = true; return; }
+
+        float b = 1;
+        for (int i = 1; i < TimePos.Length; i++)
+        {
+            if (a > TimePos[i - 1].x && a < TimePos[i].x)
+            {
+                float f = (a - TimePos[i - 1].x) / (TimePos[i].x - TimePos[i - 1].x);
+                b = Mathf.Lerp(TimePos[i - 1].y, TimePos[i].y, f);
+                break;
+            }
+        }
+
+        var p2d = Path.getLerp(b);
+        var p2dTarget = Path.getLerp(b + 0.01f);
+        manager.player.transform.position = new Vector3(p2d.x, 0, p2d.y);
+        manager.player.transform.LookAt(new Vector3(p2dTarget.x, 0, p2dTarget.y));
     }
 
     void OnDrawGizmos()
     {
-        /*foreach (var wp in RealWaypoints())
-        {
-            Gizmos.DrawWireSphere(wp, 1.0f);
-        }*/
-
         Gizmos.color = Color.blue;
         Utils.DrawYRect(
             gameObject.transform.position.x,
