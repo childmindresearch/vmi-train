@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using static ExperimentSerialization;
 
@@ -6,7 +7,7 @@ public class Room : MonoBehaviour
     public float RoomWidth, RoomHeight = 50;
 
     public Vector3[] WayPoints;
-    public Vector2[] TimePos;
+    public XPath TimePos;
     public bool TimePosInterpolation = false;
     public Vector2[] OcclusionStartStop;
     public RectifiedPath Path = null;
@@ -21,6 +22,14 @@ public class Room : MonoBehaviour
     public int NumDistractors = 0;
 
     public int seed = 42;
+
+    public float[] jumps;
+    public float jumpDuration = 1f;
+    public float jumpTimePosSlope = -0.5f;
+    public GameObject[] jumpObjs;
+    public XPath[] jumpPaths;
+
+    public Utils.SimpleTimer DataCaptureTimer = new Utils.SimpleTimer(0.1f);
 
     private void SetCameraToBounds(Camera cam)
     {
@@ -52,19 +61,26 @@ public class Room : MonoBehaviour
         room.Duration = config.durationSec;
         room.NumDistractors = config.numDistractors;
         room.seed = config.seed;
+        room.jumps = config.jumps;
+        room.jumpTimePosSlope = config.jumpTimePosSlope;
+        Utils.ClampArray(room.jumps, 0, 1);
 
         room.TimePosInterpolation = config.timeposInterpolation;
-        room.TimePos = Utils.ScalarArr2Vec2Arr(config.timepos);
+        var tempTimePos = Utils.ScalarArr2Vec2Arr(config.timepos);
+        Utils.ClampArray(tempTimePos, 0, 1);
 
         if (room.TimePosInterpolation)
         {
-            room.TimePos = new LagrangeInterpolation(room.TimePos).rectify(0, 1, 0.01f, 0.001f, 1000).GetPoints();
+            room.TimePos = new XPath(new LagrangeInterpolation(tempTimePos).rectify(0, 1, 0.01f, 0.001f, 1000).points);
         }
-        Utils.ClampArrInPlace(room.TimePos, 0, 1);
+        else
+        {
+            room.TimePos = new XPath(new List<Vector2>(Utils.ScalarArr2Vec2Arr(config.timepos)));
+        }
 
 
         room.OcclusionStartStop = Utils.ScalarArr2Vec2Arr(config.occlusionStartStop);
-        Utils.ClampArrInPlace(room.OcclusionStartStop, 0, 1);
+        Utils.ClampArray(room.OcclusionStartStop, 0, 1);
 
         room.WayPoints = Utils.ScalarArr2Vec3ArrXZ(config.path);
         for (var i = 0; i < room.WayPoints.Length; i++)
@@ -104,19 +120,17 @@ public class Room : MonoBehaviour
 
     private void GenerateObjAlongPath(GameObject segmentPrefab, float spacing, float start = 0, float stop = 1)
     {
-        if (manager.track == null || !generateTracks) return;
+        var numSegments = (int) Path.arcLength / spacing;
 
-        var pp = new Vector3[(int)(Path.arcLength / spacing)];
-
-        for (int i = 1; i < pp.Length; i++)
+        for (int i = 1; i < numSegments; i++)
         {
-            float perc = (i - .5f) / (pp.Length - 1f);
+            float perc = (i - .5f) / (numSegments - 1f);
             if (perc < start || stop < perc) continue;
 
             var segment = Instantiate(segmentPrefab, transform);
 
-            var p0 = Path.getLerp((i - 1) / ((float)pp.Length - 1));
-            var p1 = Path.getLerp(i / ((float)pp.Length - 1));
+            var p0 = Path.getLerp((i - 1) / ((float)numSegments - 1));
+            var p1 = Path.getLerp(i / ((float)numSegments - 1));
             segment.transform.position = new Vector3(
                 (p0.x + p1.x) * 0.5f,
                 0,
@@ -140,10 +154,10 @@ public class Room : MonoBehaviour
 
         for (var i = 0; i < OcclusionStartStop.Length; i++)
         {
-            GenerateObjAlongPath(manager.occlusionObj, manager.occlusionObjSpacing, OcclusionStartStop[i].x, OcclusionStartStop[i].y);
+            GenerateObjAlongPath(
+                manager.occlusionObj, manager.occlusionObjSpacing,
+                OcclusionStartStop[i].x, OcclusionStartStop[i].y);
         }
-
-
     }
 
     private void GenerateDistractors()
@@ -165,6 +179,29 @@ public class Room : MonoBehaviour
         }
     }
 
+    private void GenerateJumps()
+    {
+        if (manager.jumpObj == null) return;
+
+        jumpObjs = new GameObject[jumps.Length];
+        jumpPaths = new XPath[jumps.Length];
+
+        var posTime = TimePos.invert();
+
+        for (var i = 0; i < jumps.Length; i++)
+        {
+            var jumpTime = posTime.getLerp(jumps[i]);
+
+            float intercept = jumps[i] - jumpTimePosSlope * jumpTime;
+
+            jumpObjs[i] = Instantiate(manager.jumpObj, transform);
+            jumpPaths[i] = new XPath(new List<Vector2>(new Vector2[] {
+                new Vector2(0, intercept),
+                new Vector2(1, intercept + jumpTimePosSlope)
+            }));
+        }
+    }
+
     private void Start()
     {
         if (Path == null) RecalculatePath();
@@ -172,6 +209,7 @@ public class Room : MonoBehaviour
         GenerateTracks();
         GenerateOcclusions();
         GenerateDistractors();
+        GenerateJumps();
     }
 
     void Update()
@@ -180,21 +218,34 @@ public class Room : MonoBehaviour
 
         if (a >= 1) { finished = true; return; }
 
-        float b = 1;
-        for (int i = 1; i < TimePos.Length; i++)
-        {
-            if (a > TimePos[i - 1].x && a < TimePos[i].x)
-            {
-                float f = (a - TimePos[i - 1].x) / (TimePos[i].x - TimePos[i - 1].x);
-                b = Mathf.Lerp(TimePos[i - 1].y, TimePos[i].y, f);
-                break;
-            }
-        }
+        float b = TimePos.getLerp(a);
 
         var p2d = Path.getLerp(b);
         var p2dTarget = Path.getLerp(b + 0.01f);
         manager.player.transform.position = new Vector3(p2d.x, 0, p2d.y);
         manager.player.transform.LookAt(new Vector3(p2dTarget.x, 0, p2dTarget.y));
+
+        for (int i = 0; i < jumps.Length; ++i)
+        {
+            // j = status/percentage of jump: 0 = begin, 1 = end
+            float j = (((b - jumps[i]) / (jumpDuration / Path.arcLength)) * .5f) + 0.5f;
+            if (j > 0 && j < 1)
+            {
+                manager.player.transform.Rotate(new Vector3(0, 1, 0), j * 360);
+            }
+
+            var pos = Path.getLerp(jumpPaths[i].getLerp(a));
+            jumpObjs[i].transform.position = new Vector3(pos.x, 0, pos.y);
+        }
+
+
+        for (int i = DataCaptureTimer.Update(Time.deltaTime); i > 0; --i)
+        {
+            DataCaptureSystem.Instance.ReportEvent("DataCapture",
+                $"Position={manager.player.transform.position} " +
+                $"Rotation={manager.player.transform.eulerAngles} " +
+                $"Touch={(Input.touchCount > 0 ? Input.GetTouch(0).position.ToString() : "None")}");
+        }
     }
 
     void OnDrawGizmos()

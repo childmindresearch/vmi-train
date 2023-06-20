@@ -7,7 +7,8 @@ public class RoomManager : MonoBehaviour
     public GameObject track;
     public float trackSpacing = 2.25f;
     public GameObject occlusionObj;
-    public float occlusionObjSpacing = 2.25f;
+    public GameObject jumpObj;
+    public float occlusionObjSpacing = 1.14f;
     public GameObject player;
     public GameObject distractorContainer;
     private Room[] rooms;
@@ -19,6 +20,8 @@ public class RoomManager : MonoBehaviour
     {
         var config = ExperimentSerialization.LoadDefault();
 
+        DataCaptureSystem.Instance.ReportEvent("RoomManager.Config.Loaded", config.ToJson());
+
         rooms = new Room[config.rooms.Length];
 
         for (var i = 0; i < rooms.Length; i++)
@@ -26,7 +29,11 @@ public class RoomManager : MonoBehaviour
             rooms[i] = Room.FromConfiguration(config.rooms[i], this, this.gameObject);
         }
 
+        DataCaptureSystem.Instance.ReportEvent("RoomManager", "Initialized");
+
+        DataCaptureSystem.Instance.ReportEvent("RoomManager.Room.Start", 0);
         rooms[0].StartRoom();
+
     }
 
     // Update is called once per frame
@@ -40,6 +47,7 @@ public class RoomManager : MonoBehaviour
             {
                 currentRoom = 0;
             }
+            DataCaptureSystem.Instance.ReportEvent("RoomManager.Room.Start", currentRoom);
             rooms[currentRoom].StartRoom();
         }
     }

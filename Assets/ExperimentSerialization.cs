@@ -18,12 +18,25 @@ public static class ExperimentSerialization
         public float[] timepos = { 0f, 0f, 1f, 1f };
         public bool timeposInterpolation = false;
         public float[] occlusionStartStop = { };
+
+        public float[] jumps = { };
+        public float jumpTimePosSlope = -0.5f;
     }
 
     [Serializable]
     public class ExperimentConfiguration
     {
         public RoomConfiguration[] rooms = { new RoomConfiguration() };
+
+        public static ExperimentConfiguration FromJson(string json)
+        {
+            return JsonUtility.FromJson<ExperimentConfiguration>(json);
+        }
+
+        public string ToJson()
+        {
+            return JsonUtility.ToJson(this, true);
+        }
     }
 
     static string ReadTextFile(string path)
@@ -33,10 +46,6 @@ public static class ExperimentSerialization
 
     public static ExperimentConfiguration LoadDefault()
     {
-        return JsonUtility.FromJson<ExperimentConfiguration>(ReadTextFile("test"));
-    }
-
-    //Debug.Log(JsonUtility.FromJson<ExperimentConfiguration>(ReadTextFile("test")));
-    //Debug.Log(JsonUtility.ToJson(new ExperimentConfiguration(), true));
-  
+        return ExperimentConfiguration.FromJson(ReadTextFile("test"));
+    }  
 }

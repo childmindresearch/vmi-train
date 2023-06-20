@@ -70,7 +70,7 @@ public class Utils
         return re;
     }
 
-    public static void ClampArrInPlace(Vector2[] arr, float min, float max)
+    public static void ClampArray(Vector2[] arr, float min, float max)
     {
         for (var i = 0; i < arr.Length; i++)
         {
@@ -78,6 +78,36 @@ public class Utils
                 Mathf.Clamp(arr[i].x, min, max),
                 Mathf.Clamp(arr[i].y, min, max)
             );
+        }
+    }
+    public static void ClampArray(float[] arr, float min, float max)
+    {
+        for (var i = 0; i < arr.Length; i++)
+        {
+            arr[i] = Mathf.Clamp(arr[i], min, max);
+        }
+    }
+
+    public class SimpleTimer
+    {
+        private float interval;
+        private float t = 0;
+
+        public SimpleTimer(float interval)
+        {
+            this.interval = interval;
+        }
+
+        public int Update(float delta)
+        {
+            int re = 0;
+            this.t += delta;
+            while (t > this.interval)
+            {
+                t -= this.interval;
+                ++re;
+            }
+            return re;
         }
     }
 }

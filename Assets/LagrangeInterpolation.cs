@@ -1,11 +1,49 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
+
+[Serializable]
+public class XPath
+{
+    [SerializeField]
+    public List<Vector2> points;
+
+    public XPath(List<Vector2> points)
+    {
+        this.points = points.OrderBy(o=>o.x).Select(o=>new Vector2(o.x,o.y)).ToList();
+    }
+
+    public float getLerp(float a)
+    {
+        float b = 1;
+        for (int i = 1; i < points.Count; i++)
+        {
+            if (a >= points[i - 1].x && a <= points[i].x)
+            {
+                float f = (a - points[i - 1].x) / (points[i].x - points[i - 1].x);
+                b = Mathf.Lerp(points[i - 1].y, points[i].y, f);
+                break;
+            }
+        }
+        return b;
+    }
+
+    public XPath invert()
+    {
+        return new XPath(points.Select(o => new Vector2(o.y, o.x)).ToList());
+    }
+        
+}
+
+[Serializable]
 public class RectifiedPath
 {
-    private readonly List<Vector2> points;
-    public readonly float arcLength;
+    [SerializeField]
+    public List<Vector2> points;
+    [SerializeField]
+    public float arcLength;
 
     public RectifiedPath(List<Vector2> points, float arcLength)
     {
@@ -21,6 +59,7 @@ public class RectifiedPath
         float remainder = findex - index;
 
 
+        if (index < 0) return this.points[0];
         if (index >= this.points.Count - 1) return this.points[this.points.Count - 1];
 
         return new Vector2(

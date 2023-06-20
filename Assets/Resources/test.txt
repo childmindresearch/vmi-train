@@ -12,9 +12,11 @@
             ],
             "timepos": [
                 0.0, 0.0,
+                0.8, 0.5,
                 1.0, 1.0
             ],
-            "occlusionStartStop": []
+            "occlusionStartStop": [],
+            "jumps": [0.5, 0.8]
         },
         {
             "seed": 42,
@@ -31,7 +33,8 @@
                 0.0, 0.0,
                 1.0, 1.0
             ],
-            "occlusionStartStop": [0.2, 0.4]
+            "occlusionStartStop": [0.2, 0.4],
+            "jumps": [0.6]
         },
         {
             "seed": 43,
@@ -49,7 +52,8 @@
                 0.0, 0.0,
                 1.0, 1.0
             ],
-            "occlusionStartStop": [0.1, 0.2, 0.4, 0.8]
+            "occlusionStartStop": [0.1, 0.2, 0.4, 0.8],
+            "jumps": [0.33]
         },
         {
             "seed": 42,
@@ -71,7 +75,8 @@
                 1.0, 1.0
             ],
             "timeposInterpolation": true,
-            "occlusionStartStop": []
+            "occlusionStartStop": [],
+            "jumps": [0.2, 0.4, 0.6, 0.8]
         }
     ]
 }
