@@ -9,7 +9,8 @@ public class RoomManager : MonoBehaviour
     public GameObject occlusionObj;
     public float occlusionObjSpacing = 2.25f;
     public GameObject player;
-    public GameObject distractorContainer;
+    public GameObject staticDistractorContainer;
+    public GameObject movingDistractorContainer;
     private Room[] rooms;
 
     private int currentRoom = 0;
