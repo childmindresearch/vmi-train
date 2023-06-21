@@ -13,7 +13,8 @@ public static class ExperimentSerialization
         public float height = 40f;
 
         public float durationSec = 10;
-        public int numDistractors = 0;
+        public int numStaticDistractors = 0;
+        public int numMovingDistractors = 0;
         public float[] path = { .0f, .5f, 1f, .5f };
         public float[] timepos = { 0f, 0f, 1f, 1f };
         public bool timeposInterpolation = false;

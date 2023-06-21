@@ -19,7 +19,8 @@ public class Room : MonoBehaviour
     private float StartTime = 0f;
     public bool finished = false;
 
-    public int NumDistractors = 0;
+    public int numStaticDistractors = 0;
+    public int numMovingDistractors = 0;
 
     public int seed = 42;
 
@@ -59,7 +60,8 @@ public class Room : MonoBehaviour
         room.RoomHeight = config.height;
         room.manager = manager;
         room.Duration = config.durationSec;
-        room.NumDistractors = config.numDistractors;
+        room.numStaticDistractors = config.numStaticDistractors;
+        room.numMovingDistractors = config.numMovingDistractors;
         room.seed = config.seed;
         room.jumps = config.jumps;
         room.jumpTimePosSlope = config.jumpTimePosSlope;
@@ -160,15 +162,15 @@ public class Room : MonoBehaviour
         }
     }
 
-    private void GenerateDistractors()
+    private void GenerateStaticDistractors()
     {
         Random.InitState(seed);
-
-        var numDistractorPrototypes = manager.distractorContainer.transform.childCount;
-        for (int i = 0; i < NumDistractors; i++)
+        
+        var numDistractorPrototypes = manager.staticDistractorContainer.transform.childCount;
+        for (int i = 0; i < numStaticDistractors; i++)
         {
             int ri = Random.Range(0, numDistractorPrototypes);
-            var dObj = manager.distractorContainer.transform.GetChild(ri).gameObject;
+            var dObj = manager.staticDistractorContainer.transform.GetChild(ri).gameObject;
             Vector3 rPos = new Vector3(
                 Random.Range(0, RoomWidth),
                 0,
@@ -201,6 +203,29 @@ public class Room : MonoBehaviour
             }));
         }
     }
+    private void GenerateMovingDistractors()
+{
+    var numDistractorPrototypes = manager.movingDistractorContainer.transform.childCount;
+    for (int i = 0; i < numMovingDistractors; i++)
+    {
+        int ri = Random.Range(0, numDistractorPrototypes);
+        var dObj = manager.movingDistractorContainer.transform.GetChild(ri).gameObject;
+        Vector3 rPos = new Vector3(
+            Random.Range(0, RoomWidth),
+            0,
+            Random.Range(0, RoomHeight)
+        );
+        
+        var obj = Instantiate(dObj, rPos, dObj.transform.rotation, this.transform);
+        obj.GetComponent<Rigidbody>().velocity = new Vector3(
+            Random.Range(-1f, 1f),
+            0,
+            Random.Range(-1f, 1f)
+        ) * 10;
+        
+
+    }
+}
 
     private void Start()
     {
@@ -208,8 +233,9 @@ public class Room : MonoBehaviour
 
         GenerateTracks();
         GenerateOcclusions();
-        GenerateDistractors();
         GenerateJumps();
+        GenerateStaticDistractors();
+        GenerateMovingDistractors();
     }
 
     void Update()
