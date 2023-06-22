@@ -1,3 +1,5 @@
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static ExperimentSerialization;
@@ -17,6 +19,7 @@ public class Room : MonoBehaviour
 
     public float Duration = 10f;
     private float StartTime = 0f;
+    private bool Started = false;
     public bool finished = false;
 
     public int NumDistractors = 0;
@@ -109,7 +112,6 @@ public class Room : MonoBehaviour
         this.gameObject.SetActive(true);
         SetCameraToBounds(Camera.main);
 
-        StartTime = Time.time;
         finished = false;
     }
 
@@ -202,28 +204,20 @@ public class Room : MonoBehaviour
         }
     }
 
-    private void Start()
-    {
-        if (Path == null) RecalculatePath();
-
-        GenerateTracks();
-        GenerateOcclusions();
-        GenerateDistractors();
-        GenerateJumps();
-    }
-
-    void Update()
-    {
+    private void SetTrainPosition() {
         float a = (Time.time - StartTime) / Duration;
-
-        if (a >= 1) { finished = true; return; }
-
         float b = TimePos.getLerp(a);
 
         var p2d = Path.getLerp(b);
         var p2dTarget = Path.getLerp(b + 0.01f);
+
         manager.player.transform.position = new Vector3(p2d.x, 0, p2d.y);
         manager.player.transform.LookAt(new Vector3(p2dTarget.x, 0, p2dTarget.y));
+    }
+
+    private void SetJumps() {
+        float a = (Time.time - StartTime) / Duration;
+        float b = TimePos.getLerp(a);
 
         for (int i = 0; i < jumps.Length; ++i)
         {
@@ -237,7 +231,55 @@ public class Room : MonoBehaviour
             var pos = Path.getLerp(jumpPaths[i].getLerp(a));
             jumpObjs[i].transform.position = new Vector3(pos.x, 0, pos.y);
         }
+    }
 
+    private void AwaitStart()
+    {
+        manager.Overlay.gameObject.SetActive(true);
+        StartTime = Time.time;
+        SetTrainPosition();
+        StartCoroutine(AwaitStartCoroutine());
+    }
+
+    private IEnumerator AwaitStartCoroutine()
+    {
+        float timeHeld = 0; // seconds
+        float timeToHold = 1; // seconds
+        while (timeHeld < timeToHold)
+        {
+            if (manager.player.IsHeld()) {
+                timeHeld += Time.deltaTime;
+            } else {
+                timeHeld = 0;
+            }
+            manager.Overlay.ProgressBar.fillAmount = timeHeld / timeToHold;
+            
+            yield return null; 
+        }
+
+        Started = true;
+        StartTime = Time.time;
+        manager.Overlay.gameObject.SetActive(false);
+    }
+
+    private void Start()
+    {
+        if (Path == null) RecalculatePath();
+
+        GenerateTracks();
+        GenerateOcclusions();
+        GenerateDistractors();
+        GenerateJumps();
+        AwaitStart();
+    }
+
+    void Update()
+    {
+        if (!Started) return;
+        if ((Time.time - StartTime) / Duration >= 1) { finished = true; return; }
+
+        SetTrainPosition();
+        SetJumps();
 
         for (int i = DataCaptureTimer.Update(Time.deltaTime); i > 0; --i)
         {
