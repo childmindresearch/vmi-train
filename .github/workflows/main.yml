@@ -1,5 +1,7 @@
 name: Actions 😎
 
+permissions: write-all
+
 on: [push, pull_request]
 
 jobs:
