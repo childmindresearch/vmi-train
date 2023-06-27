@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class RoomManager : MonoBehaviour
 {
@@ -9,8 +10,9 @@ public class RoomManager : MonoBehaviour
     public GameObject occlusionObj;
     public GameObject jumpObj;
     public float occlusionObjSpacing = 1.14f;
-    public GameObject player;
+    public Clickable player;
     public GameObject distractorContainer;
+    public TaskStartOverlay Overlay;
     private Room[] rooms;
 
     private int currentRoom = 0;
@@ -46,6 +48,7 @@ public class RoomManager : MonoBehaviour
             if (currentRoom >= rooms.Length)
             {
                 currentRoom = 0;
+                SceneManager.LoadScene("MainMenu");
             }
             DataCaptureSystem.Instance.ReportEvent("RoomManager.Room.Start", currentRoom);
             rooms[currentRoom].StartRoom();
