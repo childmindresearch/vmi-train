@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class RoomManager : MonoBehaviour
 {
@@ -45,7 +46,7 @@ public class RoomManager : MonoBehaviour
             currentRoom += 1;
             if (currentRoom >= rooms.Length)
             {
-                currentRoom = 0;
+                SceneManager.LoadScene("MainMenu");
             }
             DataCaptureSystem.Instance.ReportEvent("RoomManager.Room.Start", currentRoom);
             rooms[currentRoom].StartRoom();

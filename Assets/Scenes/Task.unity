@@ -790,9 +790,13 @@ MonoBehaviour:
   WayPoints:
   - {x: 5.7, y: 0, z: 19.3}
   - {x: 60.54, y: 0, z: 18.8}
-  TimePos: []
+  TimePos:
+    points: []
   TimePosInterpolation: 0
   OcclusionStartStop: []
+  Path:
+    points: []
+    arcLength: 0
   generateTracks: 1
   manager: {fileID: 0}
   Duration: 10
@@ -801,6 +805,9 @@ MonoBehaviour:
   seed: 42
   jumps: []
   jumpDuration: 0.05
+  jumpTimePosSlope: -0.5
+  jumpObjs: []
+  jumpPaths: []
 --- !u!4 &447022021
 Transform:
   m_ObjectHideFlags: 0
@@ -1929,9 +1936,13 @@ MonoBehaviour:
   - {x: 38.8, y: 0, z: 29.76}
   - {x: 45.74, y: 0, z: 6.91}
   - {x: 61.26, y: 0, z: 16.1}
-  TimePos: []
+  TimePos:
+    points: []
   TimePosInterpolation: 0
   OcclusionStartStop: []
+  Path:
+    points: []
+    arcLength: 0
   generateTracks: 1
   manager: {fileID: 0}
   Duration: 10
@@ -1940,6 +1951,9 @@ MonoBehaviour:
   seed: 42
   jumps: []
   jumpDuration: 0.05
+  jumpTimePosSlope: -0.5
+  jumpObjs: []
+  jumpPaths: []
 --- !u!4 &964619696
 Transform:
   m_ObjectHideFlags: 0
@@ -3020,9 +3034,13 @@ MonoBehaviour:
   - {x: 38.8, y: 0, z: 17.1}
   - {x: 45.74, y: 0, z: 30.3}
   - {x: 61.26, y: 0, z: 22.1}
-  TimePos: []
+  TimePos:
+    points: []
   TimePosInterpolation: 0
   OcclusionStartStop: []
+  Path:
+    points: []
+    arcLength: 0
   generateTracks: 1
   manager: {fileID: 0}
   Duration: 10
@@ -3031,6 +3049,9 @@ MonoBehaviour:
   seed: 42
   jumps: []
   jumpDuration: 0.05
+  jumpTimePosSlope: -0.5
+  jumpObjs: []
+  jumpPaths: []
 --- !u!1001 &1691886101
 PrefabInstance:
   m_ObjectHideFlags: 0
