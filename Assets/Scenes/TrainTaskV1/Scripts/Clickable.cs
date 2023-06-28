@@ -6,7 +6,7 @@ public class Clickable : MonoBehaviour
 {
     public bool IsHeld()
     {
-        if (Input.GetMouseButtonDown(0) || Input.touchCount > 0)
+        if (Input.GetMouseButton(0) || Input.touchCount > 0)
         {
             Vector2 ClickPosition = Input.touchCount > 0 ? Input.GetTouch(0).position : (Vector2)Input.mousePosition;
             Vector3 ClickWorldPosition = Camera.main.ScreenToWorldPoint(ClickPosition);
