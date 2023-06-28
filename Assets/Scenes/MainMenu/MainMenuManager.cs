@@ -12,7 +12,7 @@ public class MainMenuManager : MonoBehaviour
         }
 
         // Load task scene
-        SceneManager.LoadScene("Task");
+        SceneManager.LoadScene("TrainTaskV1");
     }
 
     public void Quit() {
