@@ -195,18 +195,17 @@ public class Room : MonoBehaviour
         if (manager.speedUpIndicator == null || manager.slowDownIndicator == null) return;
         if (this.AcceleratorOverlay == null) return;
         
-        // Determine accelration and deceleration points
         var accelPoints = new List<float>();
         var decelPoints = new List<float>();
         var lastPos = Path.getLerp(0);
         float lastVel = 0f;
-        float deltaTime = 0.001f;
+        float timeStep = 0.001f;
         
-        for (float pos = 0.0f; pos < 0.95f; pos += deltaTime)
+        for (float pos = 0.0f; pos < 0.95f; pos += timeStep)
         {
             var currentTimePos = TimePos.getLerp(pos);
             var currentPos = Path.getLerp(currentTimePos);
-            var currentVel = (currentPos - lastPos).magnitude / deltaTime;
+            var currentVel = (currentPos - lastPos).magnitude / timeStep;
             double currentAccel = currentVel - lastVel;
 
             if (currentAccel < -0.5) decelPoints.Add(currentTimePos);
