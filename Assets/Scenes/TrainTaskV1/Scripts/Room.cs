@@ -1,4 +1,3 @@
-
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -105,6 +104,7 @@ public class Room : MonoBehaviour
         room.AcceleratorOverlay.transform.SetParent(roomObj.transform);
 
         room.gameObject.SetActive(false);
+        DataCaptureSystem.Instance.ReportEvent("ConfigInfo", $"RoomConfiguration={ObjectHash.ComputeSha256Hash(room)}");
 
         return room;
     }
@@ -118,6 +118,7 @@ public class Room : MonoBehaviour
     {
         this.gameObject.SetActive(true);
         SetCameraToBounds(Camera.main);
+        DataCaptureSystem.Instance.ReportEvent("RoomInfo", $"RoomStartHash={ObjectHash.ComputeSha256Hash(this)}");
 
         finished = false;
     }
@@ -125,6 +126,7 @@ public class Room : MonoBehaviour
     public void StopRoom()
     {
         this.gameObject.SetActive(false);
+        DataCaptureSystem.Instance.ReportEvent("RoomInfo", $"RoomEndHash={ObjectHash.ComputeSha256Hash(this)}");
     }
 
     private void GenerateObjAlongPath(GameObject segmentPrefab, float spacing, float start = 0, float stop = 1)
@@ -333,14 +335,6 @@ public class Room : MonoBehaviour
 
         SetTrainPosition();
         SetJumps();
-
-        for (int i = DataCaptureTimer.Update(Time.deltaTime); i > 0; --i)
-        {
-            DataCaptureSystem.Instance.ReportEvent("DataCapture",
-                $"Position={manager.player.transform.position} " +
-                $"Rotation={manager.player.transform.eulerAngles} " +
-                $"Touch={(Input.touchCount > 0 ? Input.GetTouch(0).position.ToString() : "None")}");
-        }
     }
 
     void OnDrawGizmos()
