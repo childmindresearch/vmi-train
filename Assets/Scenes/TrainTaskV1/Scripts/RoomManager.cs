@@ -1,8 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+/// <summary>
+/// Manages the rooms in the train task, including loading and transitioning
+/// between rooms.
+/// </summary>
 public class RoomManager : MonoBehaviour
 {
     public GameObject track;
@@ -19,12 +25,18 @@ public class RoomManager : MonoBehaviour
 
     private int currentRoom = 0;
 
-    // Start is called before the first frame update
+    /// <summary>
+    /// Initializes the RoomManager by loading the default experiment
+    /// configuration, creating Room objects from the configuration, and
+    /// starting the first room.
+    /// </summary>
     void Start()
     {
         var config = ExperimentSerialization.LoadDefault();
 
-        DataCaptureSystem.Instance.ReportEvent("RoomManager.Config.Loaded", config.ToJson());
+        string jsonConfig = config.ToJson();
+        string jsonConfigOneLine = Regex.Replace(jsonConfig, @"\s+", " ");
+        DataCaptureSystem.Instance.ReportEvent("RoomManager.Config.Loaded", jsonConfigOneLine);
 
         rooms = new Room[config.rooms.Length];
 
@@ -35,12 +47,17 @@ public class RoomManager : MonoBehaviour
 
         DataCaptureSystem.Instance.ReportEvent("RoomManager", "Initialized");
 
-        DataCaptureSystem.Instance.ReportEvent("RoomManager.Room.Start", 0);
+        DataCaptureSystem.Instance.ReportEvent("RoomManager.Room.Start", "0");
         rooms[0].StartRoom();
 
     }
 
-    // Update is called once per frame
+    /// <summary>
+    /// Called once per frame. If the current room is finished, stops the
+    /// current room, increments the current room index, and starts the next
+    /// room. If there are no more rooms, exports the data capture events to a
+    /// file and loads the main menu scene.
+    /// </summary>
     void Update()
     {
         if (rooms[currentRoom].finished)
@@ -50,6 +67,9 @@ public class RoomManager : MonoBehaviour
             if (currentRoom >= rooms.Length)
             {
                 currentRoom = 0;
+                string outputFilePath = Path.Combine(Application.persistentDataPath, "testFile.tsv");
+                Debug.Log(outputFilePath);
+                DataCaptureSystem.Instance.ExportEvents(outputFilePath);
                 SceneManager.LoadScene("MainMenu");
             }
             DataCaptureSystem.Instance.ReportEvent("RoomManager.Room.Start", currentRoom);

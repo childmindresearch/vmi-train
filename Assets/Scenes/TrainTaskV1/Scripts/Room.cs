@@ -32,8 +32,6 @@ public class Room : MonoBehaviour
     public GameObject[] jumpObjs;
     public XPath[] jumpPaths;
 
-    public Utils.SimpleTimer DataCaptureTimer = new Utils.SimpleTimer(0.1f);
-
     private void SetCameraToBounds(Camera cam)
     {
         cam.transform.position = new Vector3(
@@ -104,7 +102,6 @@ public class Room : MonoBehaviour
         room.AcceleratorOverlay.transform.SetParent(roomObj.transform);
 
         room.gameObject.SetActive(false);
-        DataCaptureSystem.Instance.ReportEvent("ConfigInfo", $"RoomConfiguration={ObjectHash.ComputeSha256Hash(room)}");
 
         return room;
     }
@@ -118,7 +115,7 @@ public class Room : MonoBehaviour
     {
         this.gameObject.SetActive(true);
         SetCameraToBounds(Camera.main);
-        DataCaptureSystem.Instance.ReportEvent("RoomInfo", $"RoomStartHash={ObjectHash.ComputeSha256Hash(this)}");
+        DataCaptureSystem.Instance.ReportEvent("Room.StartHash", ObjectHash.ComputeSha256Hash(this));
 
         finished = false;
     }
@@ -126,7 +123,7 @@ public class Room : MonoBehaviour
     public void StopRoom()
     {
         this.gameObject.SetActive(false);
-        DataCaptureSystem.Instance.ReportEvent("RoomInfo", $"RoomEndHash={ObjectHash.ComputeSha256Hash(this)}");
+        DataCaptureSystem.Instance.ReportEvent("Room.EndHash", ObjectHash.ComputeSha256Hash(this));
     }
 
     private void GenerateObjAlongPath(GameObject segmentPrefab, float spacing, float start = 0, float stop = 1)
