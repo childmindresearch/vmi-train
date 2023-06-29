@@ -6,6 +6,8 @@ using UnityEngine.SceneManagement;
 public class RoomManager : MonoBehaviour
 {
     public GameObject track;
+    public GameObject speedUpIndicator;
+    public GameObject slowDownIndicator; 
     public float trackSpacing = 2.25f;
     public GameObject occlusionObj;
     public GameObject jumpObj;

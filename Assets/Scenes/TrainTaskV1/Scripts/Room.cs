@@ -14,6 +14,7 @@ public class Room : MonoBehaviour
     public Vector2[] OcclusionStartStop;
     public RectifiedPath Path = null;
 
+    public GameObject AcceleratorOverlay;
     public bool generateTracks = true;
     public RoomManager manager;
 
@@ -96,6 +97,12 @@ public class Room : MonoBehaviour
         }
 
         room.RecalculatePath();
+        room.AcceleratorOverlay = Instantiate(new GameObject("Canvas"));
+        room.AcceleratorOverlay.AddComponent<Canvas>();
+        room.AcceleratorOverlay.GetComponent<Canvas>().renderMode = RenderMode.WorldSpace;
+        room.AcceleratorOverlay.GetComponent<Canvas>().worldCamera = Camera.main;
+        room.AcceleratorOverlay.GetComponent<Canvas>().planeDistance = 49;   
+        room.AcceleratorOverlay.transform.SetParent(roomObj.transform);
 
         room.gameObject.SetActive(false);
 
@@ -178,6 +185,51 @@ public class Room : MonoBehaviour
             );
 
             Instantiate(dObj, rPos, dObj.transform.rotation, this.transform);
+        }
+    }
+
+    private void GenerateBoostAndBrake() 
+    {
+        // Place a speedup indicator wherever the train speeds up and a slowdown indicator 
+        // wherever it slows down.
+        if (manager.speedUpIndicator == null || manager.slowDownIndicator == null) return;
+        if (this.AcceleratorOverlay == null) return;
+        
+        var accelPoints = new List<float>();
+        var decelPoints = new List<float>();
+        var lastPos = Path.getLerp(0);
+        float lastVel = 0f;
+        float timeStep = 0.001f;
+        
+        for (float pos = 0.0f; pos < 0.95f; pos += timeStep)
+        {
+            var currentTimePos = TimePos.getLerp(pos);
+            var currentPos = Path.getLerp(currentTimePos);
+            var currentVel = (currentPos - lastPos).magnitude / timeStep;
+            double currentAccel = currentVel - lastVel;
+
+            if (currentAccel < -0.5) decelPoints.Add(currentTimePos);
+            if (currentAccel > 0.5) accelPoints.Add(currentTimePos);
+
+            lastPos = currentPos;
+            lastVel = currentVel;
+        }
+
+        // Place indicators
+        foreach (var pos in accelPoints)
+        {
+            var indicator_pos = Path.getLerp(pos);
+            var indicator = Instantiate(manager.speedUpIndicator, transform);
+            indicator.transform.position = new Vector3(indicator_pos.x, 0.01f, indicator_pos.y);
+            indicator.transform.SetParent(this.AcceleratorOverlay.transform);
+        }
+
+        foreach (var pos in decelPoints)
+        {
+            var indicator_pos = Path.getLerp(pos);
+            var indicator = Instantiate(manager.slowDownIndicator, transform);
+            indicator.transform.position = new Vector3(indicator_pos.x, 0.01f, indicator_pos.y);
+            indicator.transform.SetParent(this.AcceleratorOverlay.transform);
         }
     }
 
@@ -270,6 +322,7 @@ public class Room : MonoBehaviour
         GenerateOcclusions();
         GenerateDistractors();
         GenerateJumps();
+        GenerateBoostAndBrake();
         AwaitStart();
     }
 
