@@ -14,7 +14,6 @@ public static class ObjectHash
     /// <param name="obj">The object to compute the hash for.</param>
     /// <returns>The SHA256 hash of the object.</returns>
     public static string ComputeSha256Hash(object obj)
-        public static string ComputeSha256Hash(object obj)
         {
             string json = JsonUtility.ToJson(obj);
             byte[] bytes = Encoding.UTF8.GetBytes(json);
