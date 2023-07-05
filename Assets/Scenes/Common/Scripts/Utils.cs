@@ -87,27 +87,4 @@ public class Utils
             arr[i] = Mathf.Clamp(arr[i], min, max);
         }
     }
-
-    public class SimpleTimer
-    {
-        private float interval;
-        private float t = 0;
-
-        public SimpleTimer(float interval)
-        {
-            this.interval = interval;
-        }
-
-        public int Update(float delta)
-        {
-            int re = 0;
-            this.t += delta;
-            while (t > this.interval)
-            {
-                t -= this.interval;
-                ++re;
-            }
-            return re;
-        }
-    }
 }
