@@ -34,7 +34,7 @@ public class Clickable : Movable
     new void Update() {
         base.Update();
         if (this.IsHeld()) {
-            DataCaptureSystem.Instance.ReportEvent($"{this.name}.IsHeld", $"true");
+            DataCaptureSystem.Instance.ReportEvent($"{this.name}.IsHeld", true);
         }
     }
 }

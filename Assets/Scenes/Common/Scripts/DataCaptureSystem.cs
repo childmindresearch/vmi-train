@@ -17,15 +17,6 @@ public class DataCaptureSystem : MonoBehaviour
     private string labelCaption = "hello!";
     private List<string> Events = new List<string>();
     private DateTime StartTime = DateTime.Now;
-    private int FrameNumber = 0;
-
-    /// <summary>
-    /// Called every frame, updates the frame number by one.
-    /// </summary>
-    void Update()
-    {
-        FrameNumber += 1;
-    }
 
     /// <summary>
     /// Represents the time interval since the DataCaptureSystem was
@@ -50,6 +41,7 @@ public class DataCaptureSystem : MonoBehaviour
         else
         {
             Instance = this;
+            DontDestroyOnLoad(gameObject);
         }
     }
 
@@ -69,7 +61,7 @@ public class DataCaptureSystem : MonoBehaviour
     /// <param name="separator">The separator to use between the name and object.</param>
     public void ReportEvent(string name, string obj, string separator = "\t")
     {
-        labelCaption = FrameNumber.ToString() + separator + ExperimentTime().ToString() + separator + name + separator + obj;
+        labelCaption = Time.frameCount.ToString() + separator + ExperimentTime().ToString() + separator + name + separator + obj;
         Events.Add(labelCaption);
     }
 
