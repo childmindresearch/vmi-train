@@ -32,6 +32,10 @@ public class Room : MonoBehaviour
     public GameObject[] jumpObjs;
     public XPath[] jumpPaths;
 
+    /// <summary>
+    /// Sets the position and orthographic size of the given camera to match the dimensions of the Room.
+    /// </summary>
+    /// <param name="cam">The camera to set the position and orthographic size of.</param>
     private void SetCameraToBounds(Camera cam)
     {
         cam.transform.position = new Vector3(
@@ -46,11 +50,22 @@ public class Room : MonoBehaviour
         cam.transform.eulerAngles = new Vector3(90, 0, 0);
     }
 
+    /// <summary>
+    /// This method is called when the dimensions of the RectTransform of the GameObject this script is attached to change.
+    /// It sets the camera bounds to match the new dimensions of the Room.
+    /// </summary>
     private void OnRectTransformDimensionsChange()
     {
         SetCameraToBounds(Camera.main);
     }
 
+    /// <summary>
+    /// Creates a new Room instance from a RoomConfiguration object.
+    /// </summary>
+    /// <param name="config">The RoomConfiguration object to use for creating the Room instance.</param>
+    /// <param name="manager">The RoomManager instance that manages the Room.</param>
+    /// <param name="parent">The parent GameObject to attach the Room to.</param>
+    /// <returns>A new Room instance created from the RoomConfiguration object.</returns>
     public static Room FromConfiguration(RoomConfiguration config, RoomManager manager, GameObject parent)
     {
         var roomObj = new GameObject("Room");
@@ -106,11 +121,17 @@ public class Room : MonoBehaviour
         return room;
     }
 
+    /// <summary>
+    /// Recalculates the path of the Room using Lagrange interpolation.
+    /// </summary>
     private void RecalculatePath()
     {
         Path = new LagrangeInterpolation(WayPoints).rectify(0, RoomWidth, 1, 0.01f, 1000);
     }
 
+    /// <summary>
+    /// Activates the room game object.
+    /// </summary>
     public void StartRoom()
     {
         this.gameObject.SetActive(true);
@@ -120,12 +141,22 @@ public class Room : MonoBehaviour
         finished = false;
     }
 
+    /// <summary>
+    /// Deactivates the room game object.
+    /// </summary>
     public void StopRoom()
     {
         this.gameObject.SetActive(false);
         DataCaptureSystem.Instance.ReportEvent("Room.EndHash", ObjectHash.ComputeSha256Hash(this));
     }
 
+    /// <summary>
+    /// Generates objects along the path of the room by instantiating object segments at regular intervals.
+    /// </summary>
+    /// <param name="segmentPrefab">The prefab of the object segment to instantiate.</param>
+    /// <param name="spacing">The spacing between each object segment.</param>
+    /// <param name="start">The starting percentage of the path to generate objects on (default is 0).</param>
+    /// <param name="stop">The ending percentage of the path to generate objects on (default is 1).</param>
     private void GenerateObjAlongPath(GameObject segmentPrefab, float spacing, float start = 0, float stop = 1)
     {
         var numSegments = (int) Path.arcLength / spacing;
@@ -149,6 +180,9 @@ public class Room : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Generates tracks in the room by instantiating track objects along the path of the room.
+    /// </summary>
     private void GenerateTracks()
     {
         if (manager.track == null || !generateTracks) return;
@@ -156,6 +190,10 @@ public class Room : MonoBehaviour
         GenerateObjAlongPath(manager.track, manager.trackSpacing);
     }
 
+    /// <summary>
+    /// Generates occlusions in the room by instantiating occlusion objects along the path of the room.
+    /// Occlusion objects are instantiated at random positions within the specified start and stop range.
+    /// </summary>
     private void GenerateOcclusions()
     {
         if (manager.occlusionObj == null) return;
@@ -168,6 +206,11 @@ public class Room : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Generates distractors in the room by randomly selecting objects from the
+    /// distractor container and instantiating them at random positions within
+    /// the room.
+    /// </summary>
     private void GenerateDistractors()
     {
         Random.InitState(seed);
@@ -187,7 +230,10 @@ public class Room : MonoBehaviour
         }
     }
 
-    private void GenerateBoostAndBrake() 
+    /// <summary>
+    /// Generates speedup and slowdown indicators along the train's path and places them in the AcceleratorOverlay.
+    /// </summary>
+    private void GenerateBoostAndBrake()
     {
         // Place a speedup indicator wherever the train speeds up and a slowdown indicator 
         // wherever it slows down.
@@ -232,6 +278,11 @@ public class Room : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Generates jumps in the room by instantiating jump objects along the path
+    /// of the room. Jump objects are instantiated at positions determined by
+    /// the jump time and the slope of the jump time position.
+    /// </summary>
     private void GenerateJumps()
     {
         if (manager.jumpObj == null) return;
@@ -255,6 +306,9 @@ public class Room : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Sets the position and orientation of the train based on the current time.
+    /// </summary>
     private void SetTrainPosition() {
         float a = (Time.time - StartTime) / Duration;
         float b = TimePos.getLerp(a);
@@ -266,6 +320,9 @@ public class Room : MonoBehaviour
         manager.player.transform.LookAt(new Vector3(p2dTarget.x, 0, p2dTarget.y));
     }
 
+    /// <summary>
+    /// Sets the jumps for the room based on the current time and player position.
+    /// </summary>
     private void SetJumps() {
         float a = (Time.time - StartTime) / Duration;
         float b = TimePos.getLerp(a);
@@ -274,8 +331,10 @@ public class Room : MonoBehaviour
         {
             // j = status/percentage of jump: 0 = begin, 1 = end
             float j = (((b - jumps[i]) / (jumpDuration / Path.arcLength)) * .5f) + 0.5f;
+
             if (j > 0 && j < 1)
             {
+                DataCaptureSystem.Instance.ReportEvent("jump", true);
                 manager.player.transform.Rotate(new Vector3(0, 1, 0), j * 360);
             }
 
@@ -284,6 +343,9 @@ public class Room : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Waits for the player to hold the train for a certain amount of time before starting the room.
+    /// </summary>
     private void AwaitStart()
     {
         manager.Overlay.gameObject.SetActive(true);
@@ -292,6 +354,10 @@ public class Room : MonoBehaviour
         StartCoroutine(AwaitStartCoroutine());
     }
 
+    /// <summary>
+    /// Waits for the player to hold the train for a certain amount of time before starting the room.
+    /// </summary>
+    /// <returns>An IEnumerator that waits for the player to hold the train for a certain amount of time before starting the room.</returns>
     private IEnumerator AwaitStartCoroutine()
     {
         float timeHeld = 0; // seconds
@@ -313,6 +379,58 @@ public class Room : MonoBehaviour
         manager.Overlay.gameObject.SetActive(false);
     }
 
+    /// <summary>
+    /// Logs special events during gameplay, such as occlusions and accelerator/decelerator events.
+    /// Logging at the object level is preferred; this function is for logging events that are not
+    /// associated with a particular object, but rather interactions between them.
+    /// </summary>
+    private void LogSpecialEvents()
+    {
+        // Log occlusion events
+        for (int i = 0; i < this.OcclusionStartStop.Length; i++)
+        {
+            float currentPos = TimePos.getLerp((Time.time - StartTime) / Duration);
+            if (currentPos > this.OcclusionStartStop[i][0] && currentPos < this.OcclusionStartStop[i][1])
+            {
+                DataCaptureSystem.Instance.ReportEvent("occlusion", true);
+            }
+        }
+
+        // Log accelerator/decelerator events
+        int nearestIndicator = 0;
+        float nearestIndicatorDistance = 999;
+        bool isAccel = false;
+
+        for (int i = 0; i < this.AcceleratorOverlay.transform.childCount; i++)
+        {
+            Vector3 indicatorPos = this.AcceleratorOverlay.transform.GetChild(i).position;
+            float indicatorDistance = Vector3.Distance(this.manager.player.transform.position, indicatorPos);
+            if (indicatorDistance < nearestIndicatorDistance)
+            {
+                nearestIndicator = i;
+                nearestIndicatorDistance = indicatorDistance;
+                isAccel = this.AcceleratorOverlay.transform.GetChild(i).name == "Booster(Clone)";
+            }
+        }
+
+        if (nearestIndicatorDistance < 0.05)
+        {
+            if (isAccel)
+            {
+                DataCaptureSystem.Instance.ReportEvent("acceleration", true);
+            }
+            else
+            {
+                DataCaptureSystem.Instance.ReportEvent("deceleration", true);
+            }
+        }
+
+
+    }
+
+    /// <summary>
+    /// Start is called before the first frame update.
+    /// </summary>
     private void Start()
     {
         if (Path == null) RecalculatePath();
@@ -325,6 +443,9 @@ public class Room : MonoBehaviour
         AwaitStart();
     }
 
+    /// <summary>
+    /// Update is called once per frame. It updates the train's position, sets the jumps, and logs special events.
+    /// </summary>
     void Update()
     {
         if (!Started) return;
@@ -332,8 +453,13 @@ public class Room : MonoBehaviour
 
         SetTrainPosition();
         SetJumps();
+        LogSpecialEvents();
     }
 
+    /// <summary>
+    /// Draws Gizmos in the Scene view for the Room object, including a blue rectangle representing the room's bounds
+    /// and a red path representing the room's waypoints.
+    /// </summary>
     void OnDrawGizmos()
     {
         Gizmos.color = Color.blue;
