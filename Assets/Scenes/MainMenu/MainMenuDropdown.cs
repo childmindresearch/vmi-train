@@ -29,7 +29,7 @@ public class MainMenuDropdown : MonoBehaviour
         this.GetComponent<TMPro.TMP_Dropdown>().onValueChanged.AddListener(delegate {
             this.SetSelectedFile();
         });
-        this.SetSelectedFile(this.configFiles[0]);
+        this.SetSelectedFile();
     }
 
     /// <summary>
