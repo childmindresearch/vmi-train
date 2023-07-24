@@ -44,8 +44,8 @@ public static class ExperimentSerialization
         return Resources.Load<TextAsset>(path).text;
     }
 
-    public static ExperimentConfiguration LoadDefault()
+    public static ExperimentConfiguration LoadFromTxt(string filebase)
     {
-        return ExperimentConfiguration.FromJson(ReadTextFile("test"));
+        return ExperimentConfiguration.FromJson(ReadTextFile(filebase));
     }  
 }
