@@ -16,12 +16,19 @@ public class MainMenuDropdown : MonoBehaviour
     /// </summary>
     void Start()
     {
-        this.configFiles = System.IO.Directory.GetFiles("Assets/Resources");
-        this.configFiles = System.Array.FindAll(this.configFiles, (string name) => name.EndsWith(".txt"));
-        this.configFiles = System.Array.ConvertAll(this.configFiles, (string name) => name.Replace("Assets/Resources/", ""));
-        this.configFiles = System.Array.ConvertAll(this.configFiles, (string name) => name.Replace(".txt", ""));
+        TextAsset[] configFiles = Resources.LoadAll<TextAsset>("");
+        List<string> validConfigFiles = new List<string>();
+        foreach (TextAsset configFile in configFiles)
+        {
+            if (configFile.name.StartsWith("levelConfig"))
+            {
+                validConfigFiles.Add(configFile.name);
+            }
+        }
+        this.configFiles = validConfigFiles.ToArray();
         List<TMPro.TMP_Dropdown.OptionData> options = new List<TMPro.TMP_Dropdown.OptionData>();
-        foreach (string file in this.configFiles) {
+        foreach (string file in this.configFiles)
+        {
             options.Add(new TMPro.TMP_Dropdown.OptionData(file));
         }
 
@@ -31,6 +38,7 @@ public class MainMenuDropdown : MonoBehaviour
         });
         this.SetSelectedFile();
     }
+    
 
     /// <summary>
     /// Sets the selected configuration file based on the value of the dropdown menu.
