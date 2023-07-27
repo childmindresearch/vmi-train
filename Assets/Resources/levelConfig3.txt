@@ -1,0 +1,83 @@
+{
+    "rooms": [
+        {
+            "seed": 42,
+            "width": 30.0,
+            "height": 20.0,
+            "durationSec": 5.0,
+            "numDistractors": 4,
+            "path": [
+                0.0,  1.0,
+                1.0,  0.0
+            ],
+            "timepos": [
+                0.0, 0.0,
+                0.4, 0.5,
+                1.0, 1.0
+            ],
+            "occlusionStartStop": [],
+            "jumps": [0.5, 0.8]
+        },
+        {
+            "seed": 42,
+            "width": 30.0,
+            "height": 20.0,
+            "durationSec": 5.0,
+            "numDistractors": 10,
+            "path": [
+                0.0,  1.0,
+                0.5,  0.2,
+                1.0,  0.9
+            ],
+            "timepos": [
+                0.0, 0.0,
+                0.2, 0.25,
+                1.0, 1.0
+            ],
+            "occlusionStartStop": [0.3, 0.4],
+            "jumps": [0.1]
+        },
+        {
+            "seed": 42,
+            "width": 30.0,
+            "height": 20.0,
+            "durationSec": 6.0,
+            "numDistractors": 5,
+            "path": [
+                0.0,  1.0,
+                0.33,  0.2,
+                0.6,  0.6,
+                1.0,  1.0
+            ],
+            "timepos": [
+                0.0, 0.0,
+                1.0, 1.0
+            ],
+            "occlusionStartStop": [0.4, 0.7],
+            "jumps": [0.9]
+        },
+        {
+            "seed": 42,
+            "width": 30.0,
+            "height": 20.0,
+            "durationSec": 5.0,
+            "numDistractors": 8,
+            "path": [
+                0.0,  1.0,
+                0.2,  0.2,
+                0.5,  0.6,
+                0.8,  0.2,
+                1.0,  0.5
+            ],
+            "timepos": [
+                0.0, 0.0,
+                0.3, 0.2,
+                0.6, 0.5,
+                1.0, 1.0
+            ],
+            "timeposInterpolation": true,
+            "occlusionStartStop": [],
+            "jumps": [0.33, 0.66]
+        }
+    ]
+}

@@ -32,7 +32,7 @@ public class RoomManager : MonoBehaviour
     /// </summary>
     void Start()
     {
-        var config = ExperimentSerialization.LoadDefault();
+        var config = ExperimentSerialization.LoadFromTxt(GlobalManager.Instance.configFile);
 
         string jsonConfig = config.ToJson();
         string jsonConfigOneLine = Regex.Replace(jsonConfig, @"\s+", " ");
