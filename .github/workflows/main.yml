@@ -59,10 +59,19 @@ jobs:
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
           targetPlatform: WebGL
+          buildName: VMI_train
           allowDirtyBuild: true
+          
+      # Publish
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@4.1.1
+        with:
+          branch: gh-pages 
+          folder: build/WebGL/VMI_train
 
       # Output
       - uses: actions/upload-artifact@v2
         with:
           name: Build
           path: build
+          
