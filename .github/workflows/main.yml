@@ -64,6 +64,7 @@ jobs:
           
       # Publish
       - name: Deploy to GitHub Pages
+        if: github.ref == 'refs/heads/main'
         uses: JamesIves/github-pages-deploy-action@4.1.1
         with:
           branch: gh-pages 
