@@ -7,7 +7,8 @@ public class TaskStartOverlay : MonoBehaviour
 {
     public Image ProgressBar;
 
-    public void Start() {
+    public void Start()
+    {
         ProgressBar.fillAmount = 0;
     }
 }

@@ -5,7 +5,8 @@ using static ExperimentSerialization;
 
 public class Room : MonoBehaviour
 {
-    public float RoomWidth, RoomHeight = 50;
+    public float RoomWidth,
+        RoomHeight = 50;
 
     public Vector3[] WayPoints;
     public XPath TimePos;
@@ -45,7 +46,10 @@ public class Room : MonoBehaviour
         );
         var roomAspect = RoomWidth / RoomHeight;
         var screenAspect = Screen.width / (float)Screen.height;
-        cam.orthographicSize = (roomAspect > screenAspect) ? RoomHeight * 0.5f * (roomAspect / screenAspect) : RoomHeight * 0.5f;
+        cam.orthographicSize =
+            (roomAspect > screenAspect)
+                ? RoomHeight * 0.5f * (roomAspect / screenAspect)
+                : RoomHeight * 0.5f;
 
         cam.transform.eulerAngles = new Vector3(90, 0, 0);
     }
@@ -66,7 +70,11 @@ public class Room : MonoBehaviour
     /// <param name="manager">The RoomManager instance that manages the Room.</param>
     /// <param name="parent">The parent GameObject to attach the Room to.</param>
     /// <returns>A new Room instance created from the RoomConfiguration object.</returns>
-    public static Room FromConfiguration(RoomConfiguration config, RoomManager manager, GameObject parent)
+    public static Room FromConfiguration(
+        RoomConfiguration config,
+        RoomManager manager,
+        GameObject parent
+    )
     {
         var roomObj = new GameObject("Room");
         roomObj.transform.parent = parent.transform;
@@ -87,13 +95,14 @@ public class Room : MonoBehaviour
 
         if (room.TimePosInterpolation)
         {
-            room.TimePos = new XPath(new LagrangeInterpolation(tempTimePos).rectify(0, 1, 0.01f, 0.001f, 1000).points);
+            room.TimePos = new XPath(
+                new LagrangeInterpolation(tempTimePos).rectify(0, 1, 0.01f, 0.001f, 1000).points
+            );
         }
         else
         {
             room.TimePos = new XPath(new List<Vector2>(Utils.ScalarArr2Vec2Arr(config.timepos)));
         }
-
 
         room.OcclusionStartStop = Utils.ScalarArr2Vec2Arr(config.occlusionStartStop);
         Utils.ClampArray(room.OcclusionStartStop, 0, 1);
@@ -113,7 +122,7 @@ public class Room : MonoBehaviour
         room.AcceleratorOverlay.AddComponent<Canvas>();
         room.AcceleratorOverlay.GetComponent<Canvas>().renderMode = RenderMode.WorldSpace;
         room.AcceleratorOverlay.GetComponent<Canvas>().worldCamera = Camera.main;
-        room.AcceleratorOverlay.GetComponent<Canvas>().planeDistance = 49;   
+        room.AcceleratorOverlay.GetComponent<Canvas>().planeDistance = 49;
         room.AcceleratorOverlay.transform.SetParent(roomObj.transform);
 
         room.gameObject.SetActive(false);
@@ -136,7 +145,10 @@ public class Room : MonoBehaviour
     {
         this.gameObject.SetActive(true);
         SetCameraToBounds(Camera.main);
-        DataCaptureSystem.Instance.ReportEvent("Room.StartHash", ObjectHash.ComputeSha256Hash(this));
+        DataCaptureSystem.Instance.ReportEvent(
+            "Room.StartHash",
+            ObjectHash.ComputeSha256Hash(this)
+        );
 
         finished = false;
     }
@@ -157,24 +169,26 @@ public class Room : MonoBehaviour
     /// <param name="spacing">The spacing between each object segment.</param>
     /// <param name="start">The starting percentage of the path to generate objects on (default is 0).</param>
     /// <param name="stop">The ending percentage of the path to generate objects on (default is 1).</param>
-    private void GenerateObjAlongPath(GameObject segmentPrefab, float spacing, float start = 0, float stop = 1)
+    private void GenerateObjAlongPath(
+        GameObject segmentPrefab,
+        float spacing,
+        float start = 0,
+        float stop = 1
+    )
     {
-        var numSegments = (int) Path.arcLength / spacing;
+        var numSegments = (int)Path.arcLength / spacing;
 
         for (int i = 1; i < numSegments; i++)
         {
             float perc = (i - .5f) / (numSegments - 1f);
-            if (perc < start || stop < perc) continue;
+            if (perc < start || stop < perc)
+                continue;
 
             var segment = Instantiate(segmentPrefab, transform);
 
             var p0 = Path.getLerp((i - 1) / ((float)numSegments - 1));
             var p1 = Path.getLerp(i / ((float)numSegments - 1));
-            segment.transform.position = new Vector3(
-                (p0.x + p1.x) * 0.5f,
-                0,
-                (p0.y + p1.y) * 0.5f
-            );
+            segment.transform.position = new Vector3((p0.x + p1.x) * 0.5f, 0, (p0.y + p1.y) * 0.5f);
 
             segment.transform.LookAt(new Vector3(p1.x, 0, p1.y));
         }
@@ -185,7 +199,8 @@ public class Room : MonoBehaviour
     /// </summary>
     private void GenerateTracks()
     {
-        if (manager.track == null || !generateTracks) return;
+        if (manager.track == null || !generateTracks)
+            return;
 
         GenerateObjAlongPath(manager.track, manager.trackSpacing);
     }
@@ -196,13 +211,17 @@ public class Room : MonoBehaviour
     /// </summary>
     private void GenerateOcclusions()
     {
-        if (manager.occlusionObj == null) return;
+        if (manager.occlusionObj == null)
+            return;
 
         for (var i = 0; i < OcclusionStartStop.Length; i++)
         {
             GenerateObjAlongPath(
-                manager.occlusionObj, manager.occlusionObjSpacing,
-                OcclusionStartStop[i].x, OcclusionStartStop[i].y);
+                manager.occlusionObj,
+                manager.occlusionObjSpacing,
+                OcclusionStartStop[i].x,
+                OcclusionStartStop[i].y
+            );
         }
     }
 
@@ -220,11 +239,7 @@ public class Room : MonoBehaviour
         {
             int ri = Random.Range(0, numDistractorPrototypes);
             var dObj = manager.distractorContainer.transform.GetChild(ri).gameObject;
-            Vector3 rPos = new Vector3(
-                Random.Range(0, RoomWidth),
-                0,
-                Random.Range(0, RoomHeight)
-            );
+            Vector3 rPos = new Vector3(Random.Range(0, RoomWidth), 0, Random.Range(0, RoomHeight));
 
             Instantiate(dObj, rPos, dObj.transform.rotation, this.transform);
         }
@@ -235,17 +250,19 @@ public class Room : MonoBehaviour
     /// </summary>
     private void GenerateBoostAndBrake()
     {
-        // Place a speedup indicator wherever the train speeds up and a slowdown indicator 
+        // Place a speedup indicator wherever the train speeds up and a slowdown indicator
         // wherever it slows down.
-        if (manager.speedUpIndicator == null || manager.slowDownIndicator == null) return;
-        if (this.AcceleratorOverlay == null) return;
-        
+        if (manager.speedUpIndicator == null || manager.slowDownIndicator == null)
+            return;
+        if (this.AcceleratorOverlay == null)
+            return;
+
         var accelPoints = new List<float>();
         var decelPoints = new List<float>();
         var lastPos = Path.getLerp(0);
         float lastVel = 0f;
         float timeStep = 0.001f;
-        
+
         for (float pos = 0.0f; pos < 0.95f; pos += timeStep)
         {
             var currentTimePos = TimePos.getLerp(pos);
@@ -253,8 +270,10 @@ public class Room : MonoBehaviour
             var currentVel = (currentPos - lastPos).magnitude / timeStep;
             double currentAccel = currentVel - lastVel;
 
-            if (currentAccel < -0.5) decelPoints.Add(currentTimePos);
-            if (currentAccel > 0.5) accelPoints.Add(currentTimePos);
+            if (currentAccel < -0.5)
+                decelPoints.Add(currentTimePos);
+            if (currentAccel > 0.5)
+                accelPoints.Add(currentTimePos);
 
             lastPos = currentPos;
             lastVel = currentVel;
@@ -285,7 +304,8 @@ public class Room : MonoBehaviour
     /// </summary>
     private void GenerateJumps()
     {
-        if (manager.jumpObj == null) return;
+        if (manager.jumpObj == null)
+            return;
 
         jumpObjs = new GameObject[jumps.Length];
         jumpPaths = new XPath[jumps.Length];
@@ -299,17 +319,23 @@ public class Room : MonoBehaviour
             float intercept = jumps[i] - jumpTimePosSlope * jumpTime;
 
             jumpObjs[i] = Instantiate(manager.jumpObj, transform);
-            jumpPaths[i] = new XPath(new List<Vector2>(new Vector2[] {
-                new Vector2(0, intercept),
-                new Vector2(1, intercept + jumpTimePosSlope)
-            }));
+            jumpPaths[i] = new XPath(
+                new List<Vector2>(
+                    new Vector2[]
+                    {
+                        new Vector2(0, intercept),
+                        new Vector2(1, intercept + jumpTimePosSlope)
+                    }
+                )
+            );
         }
     }
 
     /// <summary>
     /// Sets the position and orientation of the train based on the current time.
     /// </summary>
-    private void SetTrainPosition() {
+    private void SetTrainPosition()
+    {
         float a = (Time.time - StartTime) / Duration;
         float b = TimePos.getLerp(a);
 
@@ -323,7 +349,8 @@ public class Room : MonoBehaviour
     /// <summary>
     /// Sets the jumps for the room based on the current time and player position.
     /// </summary>
-    private void SetJumps() {
+    private void SetJumps()
+    {
         float a = (Time.time - StartTime) / Duration;
         float b = TimePos.getLerp(a);
 
@@ -364,14 +391,17 @@ public class Room : MonoBehaviour
         float timeToHold = 1; // seconds
         while (timeHeld < timeToHold)
         {
-            if (manager.player.IsHeld()) {
+            if (manager.player.IsHeld())
+            {
                 timeHeld += Time.deltaTime;
-            } else {
+            }
+            else
+            {
                 timeHeld = 0;
             }
             manager.Overlay.ProgressBar.fillAmount = timeHeld / timeToHold;
-            
-            yield return null; 
+
+            yield return null;
         }
 
         Started = true;
@@ -390,7 +420,10 @@ public class Room : MonoBehaviour
         for (int i = 0; i < this.OcclusionStartStop.Length; i++)
         {
             float currentPos = TimePos.getLerp((Time.time - StartTime) / Duration);
-            if (currentPos > this.OcclusionStartStop[i][0] && currentPos < this.OcclusionStartStop[i][1])
+            if (
+                currentPos > this.OcclusionStartStop[i][0]
+                && currentPos < this.OcclusionStartStop[i][1]
+            )
             {
                 DataCaptureSystem.Instance.ReportEvent("occlusion", true);
             }
@@ -404,7 +437,10 @@ public class Room : MonoBehaviour
         for (int i = 0; i < this.AcceleratorOverlay.transform.childCount; i++)
         {
             Vector3 indicatorPos = this.AcceleratorOverlay.transform.GetChild(i).position;
-            float indicatorDistance = Vector3.Distance(this.manager.player.transform.position, indicatorPos);
+            float indicatorDistance = Vector3.Distance(
+                this.manager.player.transform.position,
+                indicatorPos
+            );
             if (indicatorDistance < nearestIndicatorDistance)
             {
                 nearestIndicator = i;
@@ -424,8 +460,6 @@ public class Room : MonoBehaviour
                 DataCaptureSystem.Instance.ReportEvent("deceleration", true);
             }
         }
-
-
     }
 
     /// <summary>
@@ -433,7 +467,8 @@ public class Room : MonoBehaviour
     /// </summary>
     private void Start()
     {
-        if (Path == null) RecalculatePath();
+        if (Path == null)
+            RecalculatePath();
 
         GenerateTracks();
         GenerateOcclusions();
@@ -448,8 +483,13 @@ public class Room : MonoBehaviour
     /// </summary>
     void Update()
     {
-        if (!Started) return;
-        if ((Time.time - StartTime) / Duration >= 1) { finished = true; return; }
+        if (!Started)
+            return;
+        if ((Time.time - StartTime) / Duration >= 1)
+        {
+            finished = true;
+            return;
+        }
 
         SetTrainPosition();
         SetJumps();
