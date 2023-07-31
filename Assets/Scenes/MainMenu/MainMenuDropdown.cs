@@ -33,18 +33,23 @@ public class MainMenuDropdown : MonoBehaviour
         }
 
         this.GetComponent<TMPro.TMP_Dropdown>().AddOptions(options);
-        this.GetComponent<TMPro.TMP_Dropdown>().onValueChanged.AddListener(delegate {
-            this.SetSelectedFile();
-        });
+        this.GetComponent<TMPro.TMP_Dropdown>()
+            .onValueChanged.AddListener(
+                delegate
+                {
+                    this.SetSelectedFile();
+                }
+            );
         this.SetSelectedFile();
     }
-    
 
     /// <summary>
     /// Sets the selected configuration file based on the value of the dropdown menu.
     /// </summary>
-    void SetSelectedFile() {
-        GlobalManager.Instance.configFile = this.configFiles[this.GetComponent<TMPro.TMP_Dropdown>().value];
+    void SetSelectedFile()
+    {
+        GlobalManager.Instance.configFile = this.configFiles[
+            this.GetComponent<TMPro.TMP_Dropdown>().value
+        ];
     }
-
 }

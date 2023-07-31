@@ -3,7 +3,6 @@ using UnityEngine;
 
 public static class ExperimentSerialization
 {
-
     [Serializable]
     public class RoomConfiguration
     {
@@ -47,5 +46,5 @@ public static class ExperimentSerialization
     public static ExperimentConfiguration LoadFromTxt(string filebase)
     {
         return ExperimentConfiguration.FromJson(ReadTextFile(filebase));
-    }  
+    }
 }
