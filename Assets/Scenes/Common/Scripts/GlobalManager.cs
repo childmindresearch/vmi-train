@@ -27,5 +27,4 @@ public class GlobalManager : MonoBehaviour
             DontDestroyOnLoad(gameObject);
         }
     }
-
 }

@@ -13,7 +13,7 @@ public class RoomManager : MonoBehaviour
 {
     public GameObject track;
     public GameObject speedUpIndicator;
-    public GameObject slowDownIndicator; 
+    public GameObject slowDownIndicator;
     public float trackSpacing = 2.25f;
     public GameObject occlusionObj;
     public GameObject jumpObj;
@@ -49,7 +49,6 @@ public class RoomManager : MonoBehaviour
 
         DataCaptureSystem.Instance.ReportEvent("RoomManager.Room.Start", "0");
         rooms[0].StartRoom();
-
     }
 
     /// <summary>
@@ -67,9 +66,13 @@ public class RoomManager : MonoBehaviour
             if (currentRoom >= rooms.Length)
             {
                 currentRoom = 0;
-                string outputFilePath = Path.Combine(Application.persistentDataPath, "testFile.tsv");
-                Debug.Log(outputFilePath);
-                DataCaptureSystem.Instance.ExportEvents(outputFilePath);
+                string devFilePath = Path.Combine(Application.persistentDataPath, "devFile.tsv");
+                string analysisFilePath = Path.Combine(
+                    Application.persistentDataPath,
+                    "analysisFile.tsv"
+                );
+                DataCaptureSystem.Instance.ExportDevEvents(devFilePath);
+                DataCaptureSystem.Instance.ExportAnalysisEvents(analysisFilePath);
                 SceneManager.LoadScene("MainMenu");
             }
             DataCaptureSystem.Instance.ReportEvent("RoomManager.Room.Start", currentRoom);
