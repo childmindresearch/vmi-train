@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System;
+using System.Linq;
 
 /// <summary>
 /// A class that captures and reports events in the game.
@@ -50,7 +51,7 @@ public class DataCaptureSystem : MonoBehaviour
     /// </summary>
     void OnGUI()
     {
-        GUI.Label(new Rect(10,10,400,40), labelCaption, style);
+        GUI.Label(new Rect(10, 10, 400, 40), labelCaption, style);
     }
 
     /// <summary>
@@ -61,7 +62,14 @@ public class DataCaptureSystem : MonoBehaviour
     /// <param name="separator">The separator to use between the name and object.</param>
     public void ReportEvent(string name, string obj, string separator = "\t")
     {
-        labelCaption = Time.frameCount.ToString() + separator + ExperimentTime().ToString() + separator + name + separator + obj;
+        labelCaption =
+            Time.frameCount.ToString()
+            + separator
+            + ExperimentTime().ToString()
+            + separator
+            + name
+            + separator
+            + obj;
         Events.Add(labelCaption);
     }
 
@@ -85,11 +93,88 @@ public class DataCaptureSystem : MonoBehaviour
     }
 
     /// <summary>
-    /// Exports the events captured by the data capture system to a CSV file.
+    /// Exports the events captured by the data capture system to a TSV file.
+    /// This export is intended for use by developers.
     /// </summary>
     /// <param name="filepath">The name of the file to export to.</param>
-    public void ExportEvents(string filepath)
+    public void ExportDevEvents(string filepath)
     {
         System.IO.File.WriteAllLines(filepath, Events.ToArray());
+    }
+
+    /// <summary>
+    /// Exports the events captured by the data capture system to a TSV file.
+    /// This export is intended for use by researchers.
+    /// </summary>
+    /// <param name="filepath">The name of the file to export to.</param>
+    /// <param name="separator">The separator to use between columns.</param>
+    public void ExportAnalysisEvents(string filepath, string separator = "\t")
+    {
+        List<string> tsv = new List<string>();
+
+        List<string> eventsOfInterest = new List<string>
+        {
+            "frame",
+            "acceleration",
+            "deceleration",
+            "jump",
+            "occlusion",
+            "Train.IsHeld"
+        };
+        tsv.Add(string.Join(separator, eventsOfInterest));
+
+        // Group lines by frame number
+        List<List<string>> eventsByFrame = this.Events
+            .GroupBy(line => int.Parse(line.Split('\t')[0]))
+            .Select(group => group.ToList())
+            .ToList();
+
+        // Convert groups to tsv lines
+        foreach (List<string> group in eventsByFrame)
+        {
+            List<string> csvLine = new List<string>();
+
+            int groupFrameCount = int.Parse(group[0].Split('\t')[0]);
+
+            Dictionary<string, string> currentFrame = eventsOfInterest.ToDictionary(
+                eventName => eventName,
+                eventName => eventName == "frame" ? groupFrameCount.ToString() : "FALSE"
+            );
+
+            foreach (string line in group)
+            {
+                string[] lineSplit = line.Split(separator);
+                string eventName = lineSplit[2];
+                string value = lineSplit[3];
+                if (eventsOfInterest.Contains(eventName))
+                {
+                    currentFrame[eventName] = value;
+                }
+            }
+
+            bool hasEvent = false;
+            foreach (string eventName in eventsOfInterest)
+            {
+                if (eventName == "frame")
+                {
+                    continue;
+                }
+                if (currentFrame[eventName] != "FALSE")
+                {
+                    hasEvent = true;
+                    break;
+                }
+            }
+
+            if (hasEvent)
+            {
+                foreach (string eventName in eventsOfInterest)
+                {
+                    csvLine.Add(currentFrame[eventName]);
+                }
+                tsv.Add(string.Join(separator, csvLine));
+            }
+        }
+        System.IO.File.WriteAllLines(filepath, tsv.ToArray());
     }
 }
