@@ -11,4 +11,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/TrainTaskV1/TrainTaskV1.unity
     guid: a0b8883e3b63945c2a4a1e683e3f8c99
+  - enabled: 1
+    path: Assets/Scenes/ClosingScreen/ClosingScreen.unity
+    guid: aedb8801c0a454f65a43843076c93e53
   m_configObjects: {}
