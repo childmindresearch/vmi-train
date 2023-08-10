@@ -66,14 +66,17 @@ public class RoomManager : MonoBehaviour
             if (currentRoom >= rooms.Length)
             {
                 currentRoom = 0;
-                string devFilePath = Path.Combine(Application.persistentDataPath, "devFile.tsv");
+                string devFilePath = Path.Combine(
+                    Application.persistentDataPath,
+                    "development_logs.tsv"
+                );
                 string analysisFilePath = Path.Combine(
                     Application.persistentDataPath,
-                    "analysisFile.tsv"
+                    "analysis_logs.tsv"
                 );
                 DataCaptureSystem.Instance.ExportDevEvents(devFilePath);
                 DataCaptureSystem.Instance.ExportAnalysisEvents(analysisFilePath);
-                SceneManager.LoadScene("MainMenu");
+                SceneManager.LoadScene("ClosingScreen");
             }
             DataCaptureSystem.Instance.ReportEvent("RoomManager.Room.Start", currentRoom);
             rooms[currentRoom].StartRoom();

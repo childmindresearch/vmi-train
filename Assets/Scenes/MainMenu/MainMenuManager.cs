@@ -17,7 +17,7 @@ public class MainMenuManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Clears assets in the current scene and loads the task scene.
+    /// Loads the task scene.
     /// </summary>
     public void StartTask()
     {
