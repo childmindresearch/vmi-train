@@ -24,13 +24,4 @@ public class MainMenuManager : MonoBehaviour
         DataCaptureSystem.Instance.ReportEvent("MainMenuManager.StartTask", "TrainTaskV1");
         SceneManager.LoadScene("TrainTaskV1");
     }
-
-    /// <summary>
-    /// Quits the application.
-    /// </summary>
-    public void Quit()
-    {
-        DataCaptureSystem.Instance.ReportEvent("MainMenuManager.Quit", "Quit");
-        Application.Quit();
-    }
 }
