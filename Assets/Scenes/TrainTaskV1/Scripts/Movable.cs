@@ -4,14 +4,11 @@ using UnityEngine;
 
 /// <summary>
 /// This class represents a movable object in the scene. It provides
-/// functionality for detecting changes in position, rotation, and scale,
+/// functionality for detecting changes in position, and rotation,
 /// and reporting those changes to a data capture system.
 /// </summary>
 public class Movable : MonoBehaviour
 {
-    private Vector3 lastPosition;
-    private Vector3 lastRotation;
-
     /// <summary>
     /// Initializes the last position, and rotation values to the current transform values.
     /// </summary>
@@ -27,17 +24,14 @@ public class Movable : MonoBehaviour
     /// </summary>
     public void Update()
     {
-        if (lastPosition != transform.position || lastRotation != transform.eulerAngles)
-        {
-            DataCaptureSystem.Instance.ReportEvent(
-                $"{this.name}.transform.position",
-                transform.position
-            );
-            DataCaptureSystem.Instance.ReportEvent(
-                $"{this.name}.transform.eulerAngles",
-                transform.eulerAngles
-            );
-        }
+        DataCaptureSystem.Instance.ReportEvent(
+            $"{this.name}.transform.position",
+            transform.position
+        );
+        DataCaptureSystem.Instance.ReportEvent(
+            $"{this.name}.transform.eulerAngles",
+            transform.eulerAngles
+        );
         lastPosition = transform.position;
         lastRotation = transform.eulerAngles;
     }

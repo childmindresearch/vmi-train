@@ -111,7 +111,6 @@ public class DataCaptureSystem : MonoBehaviour
     public void ExportAnalysisEvents(string filepath, string separator = "\t")
     {
         List<string> tsv = new List<string>();
-
         List<string> eventsOfInterest = new List<string>
         {
             "frame",
@@ -119,6 +118,9 @@ public class DataCaptureSystem : MonoBehaviour
             "deceleration",
             "jump",
             "occlusion",
+            "Click.position",
+            "Train.transform.position",
+            "Train.transform.eulerAngles",
             "Train.IsHeld"
         };
         tsv.Add(string.Join(separator, eventsOfInterest));
@@ -129,7 +131,7 @@ public class DataCaptureSystem : MonoBehaviour
             .Select(group => group.ToList())
             .ToList();
 
-        // Convert groups to tsv lines
+        // Convert frame number groups to tsv lines
         foreach (List<string> group in eventsByFrame)
         {
             List<string> csvLine = new List<string>();
@@ -152,28 +154,11 @@ public class DataCaptureSystem : MonoBehaviour
                 }
             }
 
-            bool hasEvent = false;
             foreach (string eventName in eventsOfInterest)
             {
-                if (eventName == "frame")
-                {
-                    continue;
-                }
-                if (currentFrame[eventName] != "FALSE")
-                {
-                    hasEvent = true;
-                    break;
-                }
+                csvLine.Add(currentFrame[eventName]);
             }
-
-            if (hasEvent)
-            {
-                foreach (string eventName in eventsOfInterest)
-                {
-                    csvLine.Add(currentFrame[eventName]);
-                }
-                tsv.Add(string.Join(separator, csvLine));
-            }
+            tsv.Add(string.Join(separator, csvLine));
         }
         System.IO.File.WriteAllLines(filepath, tsv.ToArray());
     }

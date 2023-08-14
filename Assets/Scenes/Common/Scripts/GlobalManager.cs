@@ -27,4 +27,14 @@ public class GlobalManager : MonoBehaviour
             DontDestroyOnLoad(gameObject);
         }
     }
+
+    void Update()
+    {
+        if (Input.GetMouseButton(0) || Input.touchCount > 0)
+        {
+            Vector2 ClickPosition =
+                Input.touchCount > 0 ? Input.GetTouch(0).position : (Vector2)Input.mousePosition;
+            DataCaptureSystem.Instance.ReportEvent("Click.position", ClickPosition);
+        }
+    }
 }
