@@ -118,9 +118,15 @@ public class DataCaptureSystem : MonoBehaviour
             "deceleration",
             "jump",
             "occlusion",
-            "Click.position",
-            "Train.transform.position",
-            "Train.transform.eulerAngles",
+            "Click.x",
+            "Click.y",
+            "Click.z",
+            "Train.transform.position.x",
+            "Train.transform.position.y",
+            "Train.transform.position.z",
+            "Train.transform.eulerAngles.x",
+            "Train.transform.eulerAngles.y",
+            "Train.transform.eulerAngles.z",
             "Train.IsHeld"
         };
         tsv.Add(string.Join(separator, eventsOfInterest));

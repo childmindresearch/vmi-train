@@ -460,6 +460,17 @@ public class Room : MonoBehaviour
                 DataCaptureSystem.Instance.ReportEvent("deceleration", true);
             }
         }
+
+        // Log clicks
+        if (Input.GetMouseButton(0) || Input.touchCount > 0)
+        {
+            Vector2 ClickPosition =
+                Input.touchCount > 0 ? Input.GetTouch(0).position : (Vector2)Input.mousePosition;
+            Vector3 ClickWorldPosition = Camera.main.ScreenToWorldPoint(ClickPosition);
+            DataCaptureSystem.Instance.ReportEvent("Click.x", ClickWorldPosition.x);
+            DataCaptureSystem.Instance.ReportEvent("Click.y", ClickWorldPosition.y);
+            DataCaptureSystem.Instance.ReportEvent("Click.z", ClickWorldPosition.z);
+        }
     }
 
     /// <summary>
