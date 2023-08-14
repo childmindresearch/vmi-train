@@ -35,14 +35,22 @@ static class DownloadFileHelper
 /// </summary>
 public class ClosingScreenManager : MonoBehaviour
 {
-    public void DownloadData()
+    public void DownloadDevelopmentData()
     {
-        DataCaptureSystem.Instance.ReportEvent("ClosingScreen.DownloadData", "StartDownload");
-        string[] files = new string[] { "development_logs.tsv", "analysis_logs.tsv" };
-        foreach (string file in files)
-        {
-            Downloader(file);
-        }
+        DataCaptureSystem.Instance.ReportEvent(
+            "ClosingScreen.DownloadData",
+            "StartDevelopmentDownload"
+        );
+        Downloader("development_logs.tsv");
+    }
+
+    public void DownloadAnalysisData()
+    {
+        DataCaptureSystem.Instance.ReportEvent(
+            "ClosingScreen.DownloadData",
+            "StartAnalysisDownload"
+        );
+        Downloader("analysis_logs.tsv");
     }
 
     private void Downloader(string localName)
