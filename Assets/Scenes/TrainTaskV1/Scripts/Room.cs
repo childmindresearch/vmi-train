@@ -279,20 +279,20 @@ public class Room : MonoBehaviour
             lastVel = currentVel;
         }
 
-        // Place indicators
-        foreach (var pos in accelPoints)
-        {
-            var indicator_pos = Path.getLerp(pos);
-            var indicator = Instantiate(manager.speedUpIndicator, transform);
-            indicator.transform.position = new Vector3(indicator_pos.x, 0.01f, indicator_pos.y);
-            indicator.transform.SetParent(this.AcceleratorOverlay.transform);
-        }
+        CreateIndicators(accelPoints, manager.speedUpIndicator);
+        CreateIndicators(decelPoints, manager.slowDownIndicator);
+    }
 
-        foreach (var pos in decelPoints)
+    private void CreateIndicators(List<float> points, GameObject indicatorPrefab)
+    {
+        foreach (var pos in points)
         {
             var indicator_pos = Path.getLerp(pos);
-            var indicator = Instantiate(manager.slowDownIndicator, transform);
+            var lookat_pos = Path.getLerp(pos + 0.01f);
+            var indicator = Instantiate(indicatorPrefab, transform);
             indicator.transform.position = new Vector3(indicator_pos.x, 0.01f, indicator_pos.y);
+            indicator.transform.LookAt(new Vector3(lookat_pos.x, 0.01f, lookat_pos.y));
+            indicator.transform.Rotate(new Vector3(1, 0, 0), 90);
             indicator.transform.SetParent(this.AcceleratorOverlay.transform);
         }
     }
