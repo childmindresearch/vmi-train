@@ -35,6 +35,10 @@ static class DownloadFileHelper
 /// </summary>
 public class ClosingScreenManager : MonoBehaviour
 {
+    /// <summary>
+    /// Downloads the development data and reports the event to the data capture
+    /// system.
+    /// </summary>
     public void DownloadDevelopmentData()
     {
         DataCaptureSystem.Instance.ReportEvent(
@@ -44,6 +48,10 @@ public class ClosingScreenManager : MonoBehaviour
         Downloader("development_logs.tsv");
     }
 
+    /// <summary>
+    /// Downloads the analysis data and reports the event to the data capture
+    /// system.
+    /// </summary>
     public void DownloadAnalysisData()
     {
         DataCaptureSystem.Instance.ReportEvent(
@@ -53,6 +61,24 @@ public class ClosingScreenManager : MonoBehaviour
         Downloader("analysis_logs.tsv");
     }
 
+    /// <summary>
+    /// Downloads the configuration data and reports the event to the data
+    /// capture system.
+    /// </summary>
+    public void DownloadConfigData()
+    {
+        DataCaptureSystem.Instance.ReportEvent("ClosingScreen.DownloadData", "StartConfigDownload");
+        var config = ExperimentSerialization.LoadFromTxt(GlobalManager.Instance.configFile);
+        string jsonConfig = config.ToJson();
+        string configFilePath = Path.Combine(Application.persistentDataPath, "config.json");
+        File.WriteAllText(configFilePath, jsonConfig);
+        Downloader("config.json");
+    }
+
+    /// <summary>
+    /// Downloads a file with the given local name from the persistent data path and saves it to the local machine.
+    /// </summary>
+    /// <param name="localName">The name of the file to download.</param>
     private void Downloader(string localName)
     {
         string filePath = Path.Combine(Application.persistentDataPath, localName);
