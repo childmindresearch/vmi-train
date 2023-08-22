@@ -8,7 +8,7 @@ using UnityEngine;
 /// </summary>
 public class MainMenuDropdown : MonoBehaviour
 {
-    private string[] configFiles;
+    private TextAsset[] configFiles;
 
     /// <summary>
     /// This method is called when the script instance is being loaded.
@@ -16,20 +16,11 @@ public class MainMenuDropdown : MonoBehaviour
     /// </summary>
     void Start()
     {
-        TextAsset[] configFiles = Resources.LoadAll<TextAsset>("");
-        List<string> validConfigFiles = new List<string>();
-        foreach (TextAsset configFile in configFiles)
-        {
-            if (configFile.name.StartsWith("levelConfig"))
-            {
-                validConfigFiles.Add(configFile.name);
-            }
-        }
-        this.configFiles = validConfigFiles.ToArray();
+        this.configFiles = Resources.LoadAll<TextAsset>("ConfigFiles");
         List<TMPro.TMP_Dropdown.OptionData> options = new List<TMPro.TMP_Dropdown.OptionData>();
-        foreach (string file in this.configFiles)
+        foreach (TextAsset file in this.configFiles)
         {
-            options.Add(new TMPro.TMP_Dropdown.OptionData(file));
+            options.Add(new TMPro.TMP_Dropdown.OptionData(file.name));
         }
 
         this.GetComponent<TMPro.TMP_Dropdown>().AddOptions(options);
@@ -50,6 +41,6 @@ public class MainMenuDropdown : MonoBehaviour
     {
         GlobalManager.Instance.configFile = this.configFiles[
             this.GetComponent<TMPro.TMP_Dropdown>().value
-        ];
+        ].name;
     }
 }

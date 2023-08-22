@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.38359547, g: 0.53483707, b: 0.63271993, a: 1}
+  m_IndirectSpecularColor: {r: 0.38359547, g: 0.53483695, b: 0.63271993, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1415,10 +1415,10 @@ MonoBehaviour:
   track: {fileID: 4834034942988816192, guid: 41cd493f0e0a0a14f9d35eafba396547, type: 3}
   speedUpIndicator: {fileID: 816970925}
   slowDownIndicator: {fileID: 632285613}
-  trackSpacing: 2.1
+  trackSpacing: 2
   occlusionObj: {fileID: 247345903510515515, guid: eec3b91cb0f8a41618ee1109ddc2e05f, type: 3}
   jumpObj: {fileID: 6230060221329625452, guid: c8930ef46cc5f497fa2445bbdcec2f36, type: 3}
-  occlusionObjSpacing: 1.05
+  occlusionObjSpacing: 0.5
   player: {fileID: 1567864591}
   distractorContainer: {fileID: 1506180017}
   Overlay: {fileID: 1706292788}

@@ -1,0 +1,25 @@
+{
+  "rooms": [
+    {
+      "seed": 42,
+      "width": 30,
+      "height": 20,
+      "durationSec": 0.1,
+      "numDistractors": 2,
+      "path": [
+        0,
+        0.5,
+        1,
+        0.5
+      ],
+      "timepos": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "occlusionStartStop": [],
+      "jumps": []
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "rooms": [
+    {
+      "seed": 70,
+      "width": 20,
+      "height": 12,
+      "durationSec": 6,
+      "numDistractors": 10,
+      "path": [
+        0,
+        0.4,
+        0.5,
+        0.9,
+        1,
+        0.5
+      ],
+      "timepos": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "occlusionStartStop": [
+        0.2,
+        0.3
+      ],
+      "jumps": [
+        0.8
+      ]
+    },
+    {
+      "seed": 60,
+      "width": 20,
+      "height": 12,
+      "durationSec": 6,
+      "numDistractors": 10,
+      "path": [
+        0,
+        0.5,
+        0.5,
+        0.1,
+        1,
+        0.5
+      ],
+      "timepos": [
+        0,
+        0,
+        0.4,
+        0.5,
+        1,
+        1
+      ],
+      "occlusionStartStop": [
+        0.5,
+        0.7
+      ],
+      "jumps": [
+        0.2
+      ]
+    }
+  ]
+}
