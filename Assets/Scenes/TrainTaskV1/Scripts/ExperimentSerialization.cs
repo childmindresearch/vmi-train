@@ -38,13 +38,13 @@ public static class ExperimentSerialization
         }
     }
 
-    static string ReadTextFile(string path)
+    static string ReadTextFile(string filename)
     {
-        return Resources.Load<TextAsset>(path).text;
+        return Resources.Load<TextAsset>("ConfigFiles/" + filename).text;
     }
 
-    public static ExperimentConfiguration LoadFromTxt(string filebase)
+    public static ExperimentConfiguration LoadFromTxt(string filename)
     {
-        return ExperimentConfiguration.FromJson(ReadTextFile(filebase));
+        return ExperimentConfiguration.FromJson(ReadTextFile(filename));
     }
 }
