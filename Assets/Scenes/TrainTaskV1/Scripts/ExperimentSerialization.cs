@@ -38,13 +38,21 @@ public static class ExperimentSerialization
         }
     }
 
-    static string ReadTextFile(string filename)
+    static string ReadResourceTextFile(string filename)
     {
         return Resources.Load<TextAsset>("ConfigFiles/" + filename).text;
     }
 
     public static ExperimentConfiguration LoadFromTxt(string filename)
     {
-        return ExperimentConfiguration.FromJson(ReadTextFile(filename));
+        if (filename.Contains(Application.persistentDataPath))
+        {
+            // If the file was uploaded.
+            return ExperimentConfiguration.FromJson(System.IO.File.ReadAllText(filename));
+        }
+        else
+        {
+            return ExperimentConfiguration.FromJson(ReadResourceTextFile(filename));
+        }
     }
 }
