@@ -319,6 +319,8 @@ public class Room : MonoBehaviour
             float intercept = jumps[i] - jumpTimePosSlope * jumpTime;
 
             jumpObjs[i] = Instantiate(manager.jumpObj, transform);
+            jumpObjs[i].transform.localScale = new Vector3(1.2f, 1.2f, 1.2f);
+
             jumpPaths[i] = new XPath(
                 new List<Vector2>(
                     new Vector2[]
