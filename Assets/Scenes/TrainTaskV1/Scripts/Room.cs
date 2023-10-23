@@ -390,7 +390,7 @@ public class Room : MonoBehaviour
     private IEnumerator AwaitStartCoroutine()
     {
         float timeHeld = 0; // seconds
-        float timeToHold = 1; // seconds
+        float timeToHold = 0.5f; // seconds
         while (timeHeld < timeToHold)
         {
             if (manager.player.IsHeld())
