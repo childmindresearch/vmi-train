@@ -1,82 +1,131 @@
 ﻿{
-    "rooms": [
-        {
-            "seed": 42,
-            "width": 30.0,
-            "height": 20.0,
-            "durationSec": 8.0,
-            "numDistractors": 2,
-            "path": [
-                0.0,  0.5,
-                1.0,  0.5
-            ],
-            "timepos": [
-                0.0, 0.0,
-                0.8, 0.5,
-                1.0, 1.0
-            ],
-            "occlusionStartStop": [],
-            "jumps": [0.5, 0.8]
-        },
-        {
-            "seed": 42,
-            "width": 30.0,
-            "height": 20.0,
-            "durationSec": 6.0,
-            "numDistractors": 10,
-            "path": [
-                0.0,  0.5,
-                0.5,  0.9,
-                1.0,  0.5
-            ],
-            "timepos": [
-                0.0, 0.0,
-                1.0, 1.0
-            ],
-            "occlusionStartStop": [0.2, 0.4],
-            "jumps": [0.6]
-        },
-        {
-            "seed": 43,
-            "width": 30.0,
-            "height": 20.0,
-            "durationSec": 6.0,
-            "numDistractors": 5,
-            "path": [
-                0.0,  0.5,
-                0.33,  0.2,
-                0.66,  0.8,
-                1.0,  0.5
-            ],
-            "timepos": [
-                0.0, 0.0,
-                1.0, 1.0
-            ],
-            "occlusionStartStop": [0.1, 0.2, 0.4, 0.8],
-            "jumps": [0.33]
-        },
-        {
-            "seed": 42,
-            "width": 30.0,
-            "height": 20.0,
-            "durationSec": 6.0,
-            "numDistractors": 10,
-            "path": [
-                0.0,  0.5,
-                0.2,  0.8,
-                0.5,  0.6,
-                0.8,  0.8,
-                1.0,  0.5
-            ],
-            "timepos": [
-                0.0, 0.0,
-                0.2, 0.2,
-                0.75, 0.5,
-                1.0, 1.0
-            ],
-            "timeposInterpolation": true,
-            "occlusionStartStop": [],
-            "jumps": [0.2, 0.4, 0.6, 0.8]
-        }
-    ]
+  "rooms": [
+    {
+      "seed": 42,
+      "width": 30,
+      "height": 20,
+      "durationSec": 8,
+      "numDistractors": 2,
+      "path": [
+        0,
+        0.5,
+        1,
+        0.5
+      ],
+      "timepos": [
+        0,
+        0,
+        0.8,
+        0.5,
+        1,
+        1
+      ],
+      "occlusionStartStop": [],
+      "jumps": [
+        0.5,
+        0.8
+      ],
+      "instructions": "Hold the train to start"
+    },
+    {
+      "seed": 42,
+      "width": 30,
+      "height": 20,
+      "durationSec": 6,
+      "numDistractors": 10,
+      "path": [
+        0,
+        0.5,
+        0.5,
+        0.9,
+        1,
+        0.5
+      ],
+      "timepos": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "occlusionStartStop": [
+        0.2,
+        0.4
+      ],
+      "jumps": [
+        0.6
+      ],
+      "instructions": "Hold the train to start"
+    },
+    {
+      "seed": 43,
+      "width": 30,
+      "height": 20,
+      "durationSec": 6,
+      "numDistractors": 5,
+      "path": [
+        0,
+        0.5,
+        0.33,
+        0.2,
+        0.66,
+        0.8,
+        1,
+        0.5
+      ],
+      "timepos": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "occlusionStartStop": [
+        0.1,
+        0.2,
+        0.4,
+        0.8
+      ],
+      "jumps": [
+        0.33
+      ],
+      "instructions": "Hold the train to start"
+    },
+    {
+      "seed": 42,
+      "width": 30,
+      "height": 20,
+      "durationSec": 6,
+      "numDistractors": 10,
+      "path": [
+        0,
+        0.5,
+        0.2,
+        0.8,
+        0.5,
+        0.6,
+        0.8,
+        0.8,
+        1,
+        0.5
+      ],
+      "timepos": [
+        0,
+        0,
+        0.2,
+        0.2,
+        0.75,
+        0.5,
+        1,
+        1
+      ],
+      "timeposInterpolation": true,
+      "occlusionStartStop": [],
+      "jumps": [
+        0.2,
+        0.4,
+        0.6,
+        0.8
+      ],
+      "instructions": "Hold the train to start"
+    }
+  ]
 }

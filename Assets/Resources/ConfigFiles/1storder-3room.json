@@ -23,7 +23,8 @@
       "occlusionStartStop": [],
       "jumps": [
         0.5
-      ]
+      ],
+      "instructions": "Room 1: Hold the train to start"
     },
     {
       "seed": 42,
@@ -44,7 +45,8 @@
         0
       ],
       "occlusionStartStop": [],
-      "jumps": []
+      "jumps": [],
+      "instructions": "Room 2: Hold the train to start"
     },
     {
       "seed": 42,
@@ -65,7 +67,8 @@
         0.5
       ],
       "occlusionStartStop": [],
-      "jumps": []
+      "jumps": [],
+      "instructions": "Room 3: Hold the train to start"
     }
   ]
 }

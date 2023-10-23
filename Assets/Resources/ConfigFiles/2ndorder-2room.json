@@ -26,7 +26,8 @@
       ],
       "jumps": [
         0.8
-      ]
+      ],
+      "instructions": "Hold the train to start"
     },
     {
       "seed": 60,
@@ -56,7 +57,8 @@
       ],
       "jumps": [
         0.2
-      ]
+      ],
+      "instructions": "Hold the train to start"
     }
   ]
 }
