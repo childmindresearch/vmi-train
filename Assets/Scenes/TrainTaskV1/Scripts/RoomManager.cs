@@ -48,6 +48,7 @@ public class RoomManager : MonoBehaviour
         DataCaptureSystem.Instance.ReportEvent("RoomManager", "Initialized");
 
         DataCaptureSystem.Instance.ReportEvent("RoomManager.Room.Start", "0");
+        Overlay.text = rooms[currentRoom].instructions;
         rooms[0].StartRoom();
     }
 
@@ -61,6 +62,7 @@ public class RoomManager : MonoBehaviour
     {
         if (rooms[currentRoom].finished)
         {
+            this.Overlay.text = rooms[currentRoom].instructions;
             rooms[currentRoom].StopRoom();
             currentRoom += 1;
             if (currentRoom >= rooms.Length)

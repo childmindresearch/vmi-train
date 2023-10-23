@@ -32,6 +32,7 @@ public class Room : MonoBehaviour
     public float jumpTimePosSlope = -0.5f;
     public GameObject[] jumpObjs;
     public XPath[] jumpPaths;
+    public string instructions;
 
     /// <summary>
     /// Sets the position and orthographic size of the given camera to match the dimensions of the Room.
@@ -87,6 +88,7 @@ public class Room : MonoBehaviour
         room.seed = config.seed;
         room.jumps = config.jumps;
         room.jumpTimePosSlope = config.jumpTimePosSlope;
+        room.instructions = config.instructions;
         Utils.ClampArray(room.jumps, 0, 1);
 
         room.TimePosInterpolation = config.timeposInterpolation;
