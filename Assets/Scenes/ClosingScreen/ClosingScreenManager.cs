@@ -85,4 +85,9 @@ public class ClosingScreenManager : MonoBehaviour
         string fileContent = File.ReadAllText(filePath);
         DownloadFileHelper.DownloadToFile(fileContent, localName);
     }
+
+    public void ReturnToMainMenu()
+    {
+        SceneManager.LoadScene("MainMenu");
+    }
 }
