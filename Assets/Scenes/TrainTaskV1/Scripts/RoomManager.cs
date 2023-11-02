@@ -20,10 +20,11 @@ public class RoomManager : MonoBehaviour
     public float occlusionObjSpacing = 1.14f;
     public Clickable player;
     public GameObject distractorContainer;
-    public TaskStartOverlay Overlay;
-    private Room[] rooms;
+    public TaskStartOverlay TaskStartOverlay;
+    public RoomNumberOverlay RoomNumberOverlay;
+    public Room[] rooms;
 
-    private int currentRoom = 0;
+    public int currentRoom = 0;
 
     /// <summary>
     /// Initializes the RoomManager by loading the default experiment
@@ -48,7 +49,7 @@ public class RoomManager : MonoBehaviour
         DataCaptureSystem.Instance.ReportEvent("RoomManager", "Initialized");
 
         DataCaptureSystem.Instance.ReportEvent("RoomManager.Room.Start", "0");
-        Overlay.text = rooms[currentRoom].instructions;
+        TaskStartOverlay.text = rooms[currentRoom].instructions;
         rooms[0].StartRoom();
     }
 
@@ -62,7 +63,7 @@ public class RoomManager : MonoBehaviour
     {
         if (rooms[currentRoom].finished)
         {
-            this.Overlay.text = rooms[currentRoom].instructions;
+            TaskStartOverlay.text = rooms[currentRoom].instructions;
             rooms[currentRoom].StopRoom();
             currentRoom += 1;
             if (currentRoom >= rooms.Length)

@@ -379,7 +379,7 @@ public class Room : MonoBehaviour
     /// </summary>
     private void AwaitStart()
     {
-        manager.Overlay.gameObject.SetActive(true);
+        manager.TaskStartOverlay.gameObject.SetActive(true);
         StartTime = Time.time;
         SetTrainPosition();
         StartCoroutine(AwaitStartCoroutine());
@@ -403,14 +403,14 @@ public class Room : MonoBehaviour
             {
                 timeHeld = 0;
             }
-            manager.Overlay.ProgressBar.fillAmount = timeHeld / timeToHold;
+            manager.TaskStartOverlay.ProgressBar.fillAmount = timeHeld / timeToHold;
 
             yield return null;
         }
 
         Started = true;
         StartTime = Time.time;
-        manager.Overlay.gameObject.SetActive(false);
+        manager.TaskStartOverlay.gameObject.SetActive(false);
     }
 
     /// <summary>
