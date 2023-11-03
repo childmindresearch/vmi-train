@@ -8,10 +8,13 @@ public class RoomNumberOverlay : MonoBehaviour
 {
     public GameObject text;
     public RoomManager manager;
+    public GameObject loadingBarInner;
 
     public void Update()
     {
         text.GetComponent<TMP_Text>().text =
             "Room " + (manager.currentRoom + 1) + " of " + manager.rooms.Length;
+        loadingBarInner.GetComponent<Image>().fillAmount =
+            ((float)manager.currentRoom + 1) / (float)manager.rooms.Length;
     }
 }
