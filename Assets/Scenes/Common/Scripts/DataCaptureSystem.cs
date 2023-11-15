@@ -114,6 +114,7 @@ public class DataCaptureSystem : MonoBehaviour
         List<string> eventsOfInterest = new List<string>
         {
             "frame",
+            "time",
             "acceleration",
             "deceleration",
             "jump",
@@ -151,6 +152,11 @@ public class DataCaptureSystem : MonoBehaviour
 
             foreach (string line in group)
             {
+                if (currentFrame["time"] == "FALSE")
+                {
+                    // Keep the time of the first log.
+                    currentFrame["time"] = line.Split('\t')[1];
+                }
                 string[] lineSplit = line.Split(separator);
                 string eventName = lineSplit[2];
                 string value = lineSplit[3];
