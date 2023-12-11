@@ -20,7 +20,8 @@
       ],
       "occlusionStartStop": [],
       "jumps": [],
-      "instructions": "Hodl the train to start"
+      "instructions": "Hodl the train to start",
+      "difficulty": 1
     }
   ]
 }

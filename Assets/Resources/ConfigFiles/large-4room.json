@@ -25,7 +25,8 @@
         0.5,
         0.8
       ],
-      "instructions": "Hold the train to start"
+      "instructions": "Hold the train to start",
+      "difficulty": 1
     },
     {
       "seed": 42,
@@ -54,7 +55,8 @@
       "jumps": [
         0.6
       ],
-      "instructions": "Hold the train to start"
+      "instructions": "Hold the train to start",
+      "difficulty": 2
     },
     {
       "seed": 43,
@@ -87,7 +89,8 @@
       "jumps": [
         0.33
       ],
-      "instructions": "Hold the train to start"
+      "instructions": "Hold the train to start",
+      "difficulty": 1
     },
     {
       "seed": 42,
@@ -125,7 +128,8 @@
         0.6,
         0.8
       ],
-      "instructions": "Hold the train to start"
+      "instructions": "Hold the train to start",
+      "difficulty": 3
     }
   ]
 }

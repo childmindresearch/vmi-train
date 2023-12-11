@@ -24,8 +24,6 @@ public class RoomManager : MonoBehaviour
     public RoomNumberOverlay RoomNumberOverlay;
     public Room[] rooms;
 
-    public int currentRoom = 0;
-
     /// <summary>
     /// Initializes the RoomManager by loading the default experiment
     /// configuration, creating Room objects from the configuration, and
@@ -48,9 +46,10 @@ public class RoomManager : MonoBehaviour
 
         DataCaptureSystem.Instance.ReportEvent("RoomManager", "Initialized");
 
-        DataCaptureSystem.Instance.ReportEvent("RoomManager.Room.Start", "0");
+        int currentRoom = GlobalManager.Instance.currentRoom;
+        DataCaptureSystem.Instance.ReportEvent("RoomManager.Room.Start", currentRoom);
         TaskStartOverlay.text = rooms[currentRoom].instructions;
-        rooms[0].StartRoom();
+        rooms[currentRoom].StartRoom();
     }
 
     /// <summary>
@@ -61,28 +60,35 @@ public class RoomManager : MonoBehaviour
     /// </summary>
     void Update()
     {
-        if (rooms[currentRoom].finished)
+        if (!rooms[GlobalManager.Instance.currentRoom].finished)
         {
-            TaskStartOverlay.text = rooms[currentRoom].instructions;
-            rooms[currentRoom].StopRoom();
-            currentRoom += 1;
-            if (currentRoom >= rooms.Length)
-            {
-                currentRoom = 0;
-                string devFilePath = Path.Combine(
-                    Application.persistentDataPath,
-                    "development_logs.tsv"
-                );
-                string analysisFilePath = Path.Combine(
-                    Application.persistentDataPath,
-                    "analysis_logs.tsv"
-                );
-                DataCaptureSystem.Instance.ExportDevEvents(devFilePath);
-                DataCaptureSystem.Instance.ExportAnalysisEvents(analysisFilePath);
-                SceneManager.LoadScene("ClosingScreen");
-            }
-            DataCaptureSystem.Instance.ReportEvent("RoomManager.Room.Start", currentRoom);
-            rooms[currentRoom].StartRoom();
+            return;
+        }
+
+        rooms[GlobalManager.Instance.currentRoom].StopRoom();
+        GlobalManager.Instance.currentRoom += 1;
+        if (GlobalManager.Instance.currentRoom >= rooms.Length)
+        {
+            GlobalManager.Instance.currentRoom = 0;
+            string devFilePath = Path.Combine(
+                Application.persistentDataPath,
+                "development_logs.tsv"
+            );
+            string analysisFilePath = Path.Combine(
+                Application.persistentDataPath,
+                "analysis_logs.tsv"
+            );
+            DataCaptureSystem.Instance.ExportDevEvents(devFilePath);
+            DataCaptureSystem.Instance.ExportAnalysisEvents(analysisFilePath);
+            SceneManager.LoadScene("ClosingScreen");
+        }
+        else
+        {
+            DataCaptureSystem.Instance.ReportEvent(
+                "LevelMap.Start",
+                GlobalManager.Instance.currentRoom
+            );
+            SceneManager.LoadScene("LevelMap");
         }
     }
 }

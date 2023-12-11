@@ -21,6 +21,7 @@ public static class ExperimentSerialization
         public float[] jumps = { };
         public float jumpTimePosSlope = -0.5f;
         public string instructions = "";
+        public int difficulty = 1;
     }
 
     [Serializable]

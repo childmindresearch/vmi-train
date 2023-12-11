@@ -10,6 +10,7 @@ public class GlobalManager : MonoBehaviour
 {
     public static GlobalManager Instance { get; private set; }
     public string configFile;
+    public int currentRoom = 0;
 
     /// <summary>
     /// Called when the script instance is being loaded.

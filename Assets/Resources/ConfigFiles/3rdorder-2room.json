@@ -29,7 +29,8 @@
       "jumps": [
         0.8
       ],
-      "instructions": "Hold the train to start"
+      "instructions": "Hold the train to start",
+      "difficulty": 1
     },
     {
       "seed": 50,
@@ -62,7 +63,8 @@
       "jumps": [
         0.1
       ],
-      "instructions": "Hold the train to start"
+      "instructions": "Hold the train to start",
+      "difficulty": 2
     }
   ]
 }

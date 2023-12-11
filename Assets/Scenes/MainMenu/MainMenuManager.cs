@@ -21,7 +21,7 @@ public class MainMenuManager : MonoBehaviour
     /// </summary>
     public void StartTask()
     {
-        DataCaptureSystem.Instance.ReportEvent("MainMenuManager.StartTask", "TrainTaskV1");
-        SceneManager.LoadScene("TrainTaskV1");
+        DataCaptureSystem.Instance.ReportEvent("MainMenuManager.StartTask", "LevelMap");
+        SceneManager.LoadScene("LevelMap");
     }
 }
