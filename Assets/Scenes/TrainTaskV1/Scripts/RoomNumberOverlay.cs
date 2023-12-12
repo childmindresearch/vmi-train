@@ -13,8 +13,8 @@ public class RoomNumberOverlay : MonoBehaviour
     public void Update()
     {
         text.GetComponent<TMP_Text>().text =
-            "Room " + (manager.currentRoom + 1) + " of " + manager.rooms.Length;
+            "Room " + (GlobalManager.Instance.currentRoom + 1) + " of " + manager.rooms.Length;
         loadingBarInner.GetComponent<Image>().fillAmount =
-            ((float)manager.currentRoom + 1) / (float)manager.rooms.Length;
+            ((float)GlobalManager.Instance.currentRoom + 1) / (float)manager.rooms.Length;
     }
 }
